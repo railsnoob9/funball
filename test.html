@@ -1,0 +1,102 @@
+<html>
+  <head>      
+    <script language="javascript" src="processing.js"></script>
+
+  </head>
+  
+  <body>
+  
+	<div>
+	<center><canvas id ="someshit"></canvas> </center>
+    </div>
+   
+       <script>
+
+	var sketch = new Processing.Sketch();
+	var sizeOfCanvasX = 800;
+	var sizeOfCanvasY = 600;
+	
+	
+	
+	var ellipsex = 400; //start position
+	var ellipsey = 120; //start position
+	
+	var backgroundr = 155;
+	var backgroundg = 155;
+	var backgroundb = 155;
+	
+	var speedchange = 2;
+
+	sketch.attachFunction = function(processing) {
+
+	processing.setup = function() {
+	  processing.size(sizeOfCanvasX, sizeOfCanvasY);
+	  
+	  
+	  
+	  processing.background(backgroundr,backgroundg,backgroundb);
+	  
+	  };
+	  
+	processing.draw = function() {
+	
+
+  processing.fill(processing.random(255),processing.random(255),processing.random(255));
+  processing.ellipse(sizeOfCanvasX/2,sizeOfCanvasY/2,sizeOfCanvasX/1.6,sizeOfCanvasY/1.1);
+
+  
+	processing.stroke(backgroundr,backgroundg,backgroundb);
+	processing.fill(0,25,255);
+	if (processing.keyCode == processing.LEFT || processing.keyCode == processing.UP || processing.keyCode == processing.DOWN || processing.keyCode == processing.RIGHT)
+	{
+		processing.fill(backgroundr,backgroundg,backgroundb);
+	    processing.ellipse(ellipsex,ellipsey,50,50);
+		//processing.stroke(backgroundr,backgroundg,backgroundb);
+		if (processing.keyCode == processing.LEFT)
+		{
+			ellipsex = ellipsex - speedchange;
+		}
+		if (processing.keyCode == processing.UP)
+		{
+			ellipsey = ellipsey - speedchange;
+		}
+		if (processing.keyCode == processing.RIGHT)
+		{
+			ellipsex = ellipsex + speedchange;
+		}
+		if (processing.keyCode == processing.DOWN)
+		{
+			ellipsey = ellipsey + speedchange;
+		}
+	}
+	
+//	processing.fill(processing.key,processing.key,processing.key-50);
+	
+  	processing.fill(0,25,255);
+  processing.ellipse(ellipsex,ellipsey,50,50);
+  
+  
+	};
+  
+	};
+	  
+	var canvas = document.getElementById("someshit");
+	// attaching the sketch to the canvas
+	var p = new Processing(canvas, sketch);
+  
+  
+  
+  function draw() {
+  
+    window.requestAnimationFrame(draw);
+}
+  
+  
+  
+	  </script>
+  
+  hi
+  
+  </body>
+  
+</html>
