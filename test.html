@@ -62,6 +62,17 @@ var player = {
 	}
 };
 
+var gamespace = {
+	position: {
+		x: sizeOfCanvasX/2,
+		y: sizeOfCanvasY/2
+	},
+	size:{
+		width: sizeOfCanvasX/1.6,
+		height: sizeOfCanvasY/1.1
+	}
+};
+
 var isoutside;
 
 sketch.attachFunction = function(processing) {
@@ -74,8 +85,13 @@ sketch.attachFunction = function(processing) {
 	processing.draw = function() {
 		// set fill color
 		processing.fill(processing.random(255),processing.sin(processing.noise()),50);
-		// draw an ellipse
-		processing.ellipse(sizeOfCanvasX/2,sizeOfCanvasY/2,sizeOfCanvasX/1.6,sizeOfCanvasY/1.1);
+		
+		// draw an ellipse--outer (gamespace)	
+		//make it get a bit smaller each frame	
+		gamespace.size.width = gamespace.size.width-.05;
+		gamespace.size.height = gamespace.size.height-.05;		
+		processing.ellipse(gamespace.position.x,gamespace.position.y,gamespace.size.width,gamespace.size.height);
+		
 		// set stroke color
 		processing.stroke(background.color.r,background.color.g,background.color.b);
 		// set fill color
@@ -139,23 +155,36 @@ sketch.attachFunction = function(processing) {
 		player.position.y = player.position.y + player.speed.current.y;				
 	
 		// define local scope function
-		isoutside = function outerCircleEdgeDetect()
+		function outerCircleEdgeDetect()
 		{
+		//	var circleRadius = 
+		
+			//var deltaX = player.position.x - groundSegment.x;
+
+		//	var deltaY = player.position.y - groundSegment.y;
+
+		
+		//	player.position.x - 
+		
+		
 			return 0;
-		};		
+		};	
+		
 		// set the fill color (player color)
 		processing.fill(player.color.r,player.color.g,player.color.b);
-		// draw the player
+		// draw the player ellipse
 		processing.ellipse(player.position.x,player.position.y,player.size.x,player.size.y);
   
-		//if (isoutside ==0)
-		// {
+		isoutside = outerCircleEdgeDetect();
+  
+		if (isoutside ==0)
+		{
 		// processing.textAlign(processing.CENTER,processing.BOTTOM);
 		// processing.textFont(processing.createFont("Arial", 24));	    
-		processing.textSize(40);
-		processing.fill(0,25,255);
-		processing.text("LOSER", sizeOfCanvasX/2, 200,550,550);
-		// }
+			processing.textSize(40);
+			processing.fill(0,25,255);
+			processing.text("LOSER", sizeOfCanvasX/2, 200,550,550);
+		}
 	};  
 };
 	  
