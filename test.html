@@ -16,8 +16,7 @@
 	var sizeOfCanvasX = 800;
 	var sizeOfCanvasY = 600;
 	
-	
-	
+
 	var ellipsex = 400; //start position
 	var ellipsey = 120; //start position
 	
@@ -26,14 +25,15 @@
 	var backgroundb = 155;
 	
 	var speedchange = 2;
+	
+	var isoutside;
 
 	sketch.attachFunction = function(processing) {
 
 	processing.setup = function() {
 	  processing.size(sizeOfCanvasX, sizeOfCanvasY);
 	  
-	  
-	  
+
 	  processing.background(backgroundr,backgroundg,backgroundb);
 	  
 	  };
@@ -70,11 +70,29 @@
 		}
 	}
 	
+	 isoutside = function outerCircleEdgeDetect()
+	  {
+		return 0;
+	  };
+	  
+
+	
 //	processing.fill(processing.key,processing.key,processing.key-50);
 	
   	processing.fill(0,25,255);
   processing.ellipse(ellipsex,ellipsey,50,50);
   
+	  //if (isoutside ==0)
+	 // {
+	   // processing.textAlign(processing.CENTER,processing.BOTTOM);
+	   
+	   
+	   // processing.textFont(processing.createFont("Arial", 24));
+	    
+		processing.textSize(40);
+		processing.fill(0,25,255);
+		processing.text("LOSER", sizeOfCanvasX/2, 200,550,550);
+	 // }
   
 	};
   
@@ -83,8 +101,6 @@
 	var canvas = document.getElementById("someshit");
 	// attaching the sketch to the canvas
 	var p = new Processing(canvas, sketch);
-  
-  
   
   function draw() {
   
