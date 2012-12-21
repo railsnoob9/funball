@@ -5,114 +5,167 @@
   </head>
   
   <body>
-  
 	<div>
-	<center><canvas id ="someshit"></canvas> </center>
-    </div>
-   
+		<center>
+			<canvas id ="world"></canvas>
+		</center>
+    </div>   
        <script>
+var sketch = new Processing.Sketch();
+var sizeOfCanvasX = 800;
+var sizeOfCanvasY = 600;
 
-	var sketch = new Processing.Sketch();
-	var sizeOfCanvasX = 800;
-	var sizeOfCanvasY = 600;
-	
 
-	var ellipsex = 400; //start position
-	var ellipsey = 120; //start position
-	
-	var backgroundr = 155;
-	var backgroundg = 155;
-	var backgroundb = 155;
-	
-	var speedchange = 2;
-	
-	var isoutside;
+//var ellipsex = 400; //start position
+//var ellipsey = 120; //start position
 
-	sketch.attachFunction = function(processing) {
-
-	processing.setup = function() {
-	  processing.size(sizeOfCanvasX, sizeOfCanvasY);
-	  
-
-	  processing.background(backgroundr,backgroundg,backgroundb);
-	  
-	  };
-	  
-	processing.draw = function() {
-	
-
-  processing.fill(processing.random(255),processing.random(255),processing.random(255));
-  processing.ellipse(sizeOfCanvasX/2,sizeOfCanvasY/2,sizeOfCanvasX/1.6,sizeOfCanvasY/1.1);
-
-  
-	processing.stroke(backgroundr,backgroundg,backgroundb);
-	processing.fill(0,25,255);
-	if (processing.keyCode == processing.LEFT || processing.keyCode == processing.UP || processing.keyCode == processing.DOWN || processing.keyCode == processing.RIGHT)
-	{
-		processing.fill(backgroundr,backgroundg,backgroundb);
-	    processing.ellipse(ellipsex,ellipsey,50,50);
-		//processing.stroke(backgroundr,backgroundg,backgroundb);
-		if (processing.keyCode == processing.LEFT)
-		{
-			ellipsex = ellipsex - speedchange;
-		}
-		if (processing.keyCode == processing.UP)
-		{
-			ellipsey = ellipsey - speedchange;
-		}
-		if (processing.keyCode == processing.RIGHT)
-		{
-			ellipsex = ellipsex + speedchange;
-		}
-		if (processing.keyCode == processing.DOWN)
-		{
-			ellipsey = ellipsey + speedchange;
-		}
+//var backgroundr = 155;
+//var backgroundg = 155;
+//var backgroundb = 155;
+var background = {
+	color: {
+		r: 155,
+		g: 155,
+		b: 155
+	},
+	size: {
+		x: 800,
+		y: 600
 	}
-	
-	 isoutside = function outerCircleEdgeDetect()
-	  {
-		return 0;
-	  };
-	  
+};
 
+//var speedchange = 2;
+
+var player = {
+	position: {
+		x: 400,
+		y: 120
+	},
+	speed: {
+		change: 0.1,
+		entropy: 0.005,
+		max: 2,
+		min: -2,
+		current: {
+			x: 0,
+			y: 0
+		}
+	},
+	size: {
+		x: 50,
+		y: 50
+	},
+	color: {
+		r: 0,
+		g: 25,
+		b: 255
+	}
+};
+
+var isoutside;
+
+sketch.attachFunction = function(processing) {
+	// happens when page loads
+	processing.setup = function() {
+		processing.size(sizeOfCanvasX, sizeOfCanvasY);
+		processing.background(background.color.r,background.color.g,background.color.b);	  
+	};
+	// happens every frame
+	processing.draw = function() {
+		// set fill color
+		processing.fill(processing.random(255),processing.sin(processing.noise()),50);
+		// draw an ellipse
+		processing.ellipse(sizeOfCanvasX/2,sizeOfCanvasY/2,sizeOfCanvasX/1.6,sizeOfCanvasY/1.1);
+		// set stroke color
+		processing.stroke(background.color.r,background.color.g,background.color.b);
+		// set fill color
+		processing.fill(player.color.r,player.color.g,player.color.b);
+		// check keyboard input
+		if (
+			processing.keyCode == processing.LEFT || 
+			processing.keyCode == processing.UP || 
+			processing.keyCode == processing.DOWN || 
+			processing.keyCode == processing.RIGHT
+			)
+		{
+			// set the fill color to background color (shadow effect)
+			processing.fill(background.color.r,background.color.g,background.color.b);
+			// draw an ellipse (player starting point)
+			processing.ellipse(player.position.x,player.position.y,player.size.x,player.size.y);	
+			// update speed of player
+			if (processing.keyCode == processing.LEFT)
+			{
+				player.speed.current.x = player.speed.current.x - player.speed.change;
+			}
+			if (processing.keyCode == processing.UP)
+			{
+				//ellipsey = ellipsey - speedchange;
+				player.speed.current.y = player.speed.current.y - player.speed.change;				
+			}
+			if (processing.keyCode == processing.RIGHT)
+			{
+				//ellipsex = ellipsex + speedchange;
+				player.speed.current.x = player.speed.current.x + player.speed.change;
+			}
+			if (processing.keyCode == processing.DOWN)
+			{
+				//ellipsey = ellipsey + speedchange;
+				player.speed.current.y = player.speed.current.y + player.speed.change;					
+			}				
+		}
+		// apply entropy/friction
+		if (player.speed.current.x > 0) {
+			player.speed.current.x = player.speed.current.x - player.speed.entropy;
+		} else if (player.speed.current.x < 0) {
+			player.speed.current.x = player.speed.current.x + player.speed.entropy;
+		}
+		if (player.speed.current.y > 0) {
+			player.speed.current.y = player.speed.current.y - player.speed.entropy;
+		} else if (player.speed.current.y < 0) {
+			player.speed.current.y = player.speed.current.y + player.speed.entropy;
+		}
+		// constrain speed
+		if (player.speed.current.y > player.speed.max) { player.speed.current.y = player.speed.max; }
+		if (player.speed.current.x > player.speed.max) { player.speed.current.x = player.speed.max; }
+		if (player.speed.current.y < player.speed.min) { player.speed.current.y = player.speed.min; }
+		if (player.speed.current.x < player.speed.min) { player.speed.current.x = player.speed.min; }	
+		// contrain position
+		if (player.position.x < 0) { player.speed.current.x = -player.speed.current.x; }
+		if (player.position.y < 0) { player.speed.current.y = -player.speed.current.y; }
+		if (player.position.x > background.size.x) { player.speed.current.x = -player.speed.current.x; }
+		if (player.position.y > background.size.y) { player.speed.current.y = -player.speed.current.y; }
+		// update position of player
+		player.position.x = player.position.x + player.speed.current.x;	
+		player.position.y = player.position.y + player.speed.current.y;				
 	
-//	processing.fill(processing.key,processing.key,processing.key-50);
-	
-  	processing.fill(0,25,255);
-  processing.ellipse(ellipsex,ellipsey,50,50);
+		// define local scope function
+		isoutside = function outerCircleEdgeDetect()
+		{
+			return 0;
+		};		
+		// set the fill color (player color)
+		processing.fill(player.color.r,player.color.g,player.color.b);
+		// draw the player
+		processing.ellipse(player.position.x,player.position.y,player.size.x,player.size.y);
   
-	  //if (isoutside ==0)
-	 // {
-	   // processing.textAlign(processing.CENTER,processing.BOTTOM);
-	   
-	   
-	   // processing.textFont(processing.createFont("Arial", 24));
-	    
+		//if (isoutside ==0)
+		// {
+		// processing.textAlign(processing.CENTER,processing.BOTTOM);
+		// processing.textFont(processing.createFont("Arial", 24));	    
 		processing.textSize(40);
 		processing.fill(0,25,255);
 		processing.text("LOSER", sizeOfCanvasX/2, 200,550,550);
-	 // }
-  
-	};
-  
-	};
+		// }
+	};  
+};
 	  
-	var canvas = document.getElementById("someshit");
-	// attaching the sketch to the canvas
-	var p = new Processing(canvas, sketch);
+var canvas = document.getElementById("world");
+// attaching the sketch to the canvas
+var p = new Processing(canvas, sketch);
   
-  function draw() {
-  
+function draw() {
     window.requestAnimationFrame(draw);
 }
-  
-  
-  
-	  </script>
-  
-  hi
-  
-  </body>
-  
+		</script>
+	</body>
 </html>
