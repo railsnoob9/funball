@@ -158,34 +158,39 @@ sketch.attachFunction = function(processing) {
 		// define local scope function
 		function outerCircleEdgeDetect()
 		{
-		//	var circleRadius = 
-		
-			//var deltaX = player.position.x - groundSegment.x;
-
-		//	var deltaY = player.position.y - groundSegment.y;
-
-		
-		//	player.position.x - 
-		
-		
-			return 0;
+			var distancex = player.position.x - gamespace.position.x;
+			var distancey = player.position.y - gamespace.position.y;
+			
+			var totaldistance = processing.sqrt(distancex*distancex + distancey*distancey);
+			
+			//we know it's a circle, so can just use radius
+			//var radius = processing.abs(gamespace.position.x - gamespace.size.width);
+			var radius = gamespace.size.width/2;
+			
+			if (totaldistance > radius)
+				return 1;
+			else
+				return 0;
 		};	
-		
+				
 		// set the fill color (player color)
 		processing.fill(player.color.r,player.color.g,player.color.b);
 		// draw the player ellipse
 		processing.ellipse(player.position.x,player.position.y,player.size.x,player.size.y);
   
 		isoutside = outerCircleEdgeDetect();
-  
-		if (isoutside ==0)
+		
+  		if (isoutside ==1)
 		{
 		// processing.textAlign(processing.CENTER,processing.BOTTOM);
-		// processing.textFont(processing.createFont("Arial", 24));	    
+		// processing.textFont(processing.createFont("Arial", 24));	   
+			//losing text
 			processing.textSize(40);
 			processing.fill(0,25,255);
-			processing.text("LOSER", sizeOfCanvasX/2, 200,550,550);
+			processing.text("Blue Loses", sizeOfCanvasX/2, 200,550,550);
+			
 		}
+
 	};  
 };
 	  
