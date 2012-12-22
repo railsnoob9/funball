@@ -42,7 +42,7 @@ var player = {
 		y: 120
 	},
 	speed: {
-		acceleration: .3,
+		acceleration: .03,
 		//entropy: 0.005,
 		entropy:0,
 		max: 3,
@@ -111,6 +111,23 @@ var gamespace = {
 var isoutside;
 var iscollision;
 
+var keys = { /*up*/38:0, /*down*/40:0, /*left*/37:0, /*right*/39:0 };
+  document.addEventListener('keydown', function(e) {
+    if(e.keyCode in keys) {
+      keys[e.keyCode] = 1;
+       //processing.keyCode = processing.LEFT;
+      //move(keys[39] - keys[37], keys[40] - keys[38])
+    }
+  }, false);
+
+  document.addEventListener('keyup', function(e) {
+    if(e.keyCode in keys) {
+      keys[e.keyCode] = 0;
+      //move(keys[39] - keys[37], keys[40] - keys[38])
+    }
+  }, false);
+
+
 sketch.attachFunction = function(processing) {
 	// happens when page loads
 	processing.setup = function() {
@@ -119,8 +136,7 @@ sketch.attachFunction = function(processing) {
 	};
 	// happens every frame
 	processing.draw = function() {
-		
-		
+
 		// set fill color allows us to on the fly determine if we want a random background or not
 		if (gamespace.gamespaceBackgroundRandom == 1)
 		{
@@ -142,40 +158,71 @@ sketch.attachFunction = function(processing) {
 		// set fill color
 		processing.fill(player.color.r,player.color.g,player.color.b);
 		// check keyboard input
-		// if (
-		// 	processing.keyCode == processing.LEFT || 
-		// 	processing.keyCode == processing.UP || 
-		// 	processing.keyCode == processing.DOWN || 
-		// 	processing.keyCode == processing.RIGHT
-		// 	)
-		// {
-		// 	// set the fill color to background color (shadow effect)
-		// 	processing.fill(background.color.r,background.color.g,background.color.b);
-		// 	// draw an ellipse (player starting point)
-		// 	processing.ellipse(player.position.x,player.position.y,player.size.x,player.size.y);	
-		// 	// update speed of player
-		// 	if (processing.keyCode == processing.LEFT)
-		// 	{
-		// 		player.speed.current.x = player.speed.current.x - player.speed.acceleration;
-		// 	}
-		// 	if (processing.keyCode == processing.UP)
-		// 	{
-		// 		//ellipsey = ellipsey - speedacceleration;
-		// 		player.speed.current.y = player.speed.current.y - player.speed.acceleration;				
-		// 	}
-		// 	if (processing.keyCode == processing.RIGHT)
-		// 	{
-		// 		//ellipsex = ellipsex + speedacceleration;
-		// 		player.speed.current.x = player.speed.current.x + player.speed.acceleration;
-		// 	}
-		// 	if (processing.keyCode == processing.DOWN)
-		// 	{
-		// 		//ellipsey = ellipsey + speedacceleration;
-		// 		player.speed.current.y = player.speed.current.y + player.speed.acceleration;					
-		// 	}	
-		// 	//reset keyCode so that it doesn't auto move to the last direction
-		// 	processing.keyCode = null;
-		// }
+		if (
+			// processing.keyCode == processing.LEFT || 
+			// processing.keyCode == processing.UP || 
+			// processing.keyCode == processing.DOWN || 
+			// processing.keyCode == processing.RIGHT
+			keys[37] == 1 ||
+			keys[38] == 1 ||
+			keys[39] == 1 ||
+			keys[40] == 1
+			)
+		{
+			// set the fill color to background color (shadow effect)
+			processing.fill(background.color.r,background.color.g,background.color.b);
+			// draw an ellipse (player starting point)
+			processing.ellipse(player.position.x,player.position.y,player.size.x,player.size.y);	
+			
+			// update speed of player
+			if (keys[37]==1)
+			{
+				player.speed.current.x = player.speed.current.x - player.speed.acceleration;
+			}
+			if (keys[38]==1)
+			{
+				//ellipsey = ellipsey - speedacceleration;
+				player.speed.current.y = player.speed.current.y - player.speed.acceleration;				
+			}
+			if (keys[39]==1)
+			{
+				//ellipsex = ellipsex + speedacceleration;
+				player.speed.current.x = player.speed.current.x + player.speed.acceleration;
+			}
+			if (keys[40]==1)
+			{
+				//ellipsey = ellipsey + speedacceleration;
+				player.speed.current.y = player.speed.current.y + player.speed.acceleration;					
+			}
+
+			// if (processing.keyCode == processing.LEFT)
+			// {
+			// 	player.speed.current.x = player.speed.current.x - player.speed.acceleration;
+			// }
+			// if (processing.keyCode == processing.UP)
+			// {
+			// 	//ellipsey = ellipsey - speedacceleration;
+			// 	player.speed.current.y = player.speed.current.y - player.speed.acceleration;				
+			// }
+			// if (processing.keyCode == processing.RIGHT)
+			// {
+			// 	//ellipsex = ellipsex + speedacceleration;
+			// 	player.speed.current.x = player.speed.current.x + player.speed.acceleration;
+			// }
+			// if (processing.keyCode == processing.DOWN)
+			// {
+			// 	//ellipsey = ellipsey + speedacceleration;
+			// 	player.speed.current.y = player.speed.current.y + player.speed.acceleration;					
+			// }	
+
+
+			//reset keyCode so that it doesn't auto move to the last direction
+
+			//if (processing.keyPressed ==false)
+			//{
+			//processing.keyCode = null;
+			//}
+		}
 		// apply entropy/friction
 		if (player.speed.current.x > 0) {
 			player.speed.current.x = player.speed.current.x - player.speed.entropy;
@@ -276,35 +323,42 @@ sketch.attachFunction = function(processing) {
 
 	};  
 
-	processing.keyPressed = function() {
+	// processing.keyReleased = function(){
+
+	// 	processing.keyCode = null;
+
+	// }
+
+
+	// processing.keyPressed = function() {
 	
-		if (processing.key == processing.CODED)
-		{
+	// 	if (processing.key == processing.CODED)
+	// 	{
 		
-			if (processing.keyCode == processing.LEFT)
-			{
-				player.speed.current.x = player.speed.current.x - player.speed.acceleration;
-			}
-			if (processing.keyCode == processing.UP)
-			{
-				//ellipsey = ellipsey - speedacceleration;
-				player.speed.current.y = player.speed.current.y - player.speed.acceleration;				
-			}
-			if (processing.keyCode == processing.RIGHT)
-			{
-				//ellipsex = ellipsex + speedacceleration;
-				player.speed.current.x = player.speed.current.x + player.speed.acceleration;
-			}
-			if (processing.keyCode == processing.DOWN)
-			{
-				//ellipsey = ellipsey + speedacceleration;
-				player.speed.current.y = player.speed.current.y + player.speed.acceleration;					
-			}	
+	// 		if (processing.keyCode == processing.LEFT)
+	// 		{
+	// 			player.speed.current.x = player.speed.current.x - player.speed.acceleration;
+	// 		}
+	// 		if (processing.keyCode == processing.UP)
+	// 		{
+	// 			//ellipsey = ellipsey - speedacceleration;
+	// 			player.speed.current.y = player.speed.current.y - player.speed.acceleration;				
+	// 		}
+	// 		if (processing.keyCode == processing.RIGHT)
+	// 		{
+	// 			//ellipsex = ellipsex + speedacceleration;
+	// 			player.speed.current.x = player.speed.current.x + player.speed.acceleration;
+	// 		}
+	// 		if (processing.keyCode == processing.DOWN)
+	// 		{
+	// 			//ellipsey = ellipsey + speedacceleration;
+	// 			player.speed.current.y = player.speed.current.y + player.speed.acceleration;					
+	// 		}	
 		
 		
-		}
+	// 	}
 	
-	};
+	// };
 };
 	  
 var canvas = document.getElementById("world");
