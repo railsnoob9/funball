@@ -34,7 +34,7 @@ var background = {
 	}
 };
 
-//var speedchange = 2;
+//var speedacceleration = 2;
 
 var player = {
 	position: {
@@ -42,11 +42,11 @@ var player = {
 		y: 120
 	},
 	speed: {
-		change: .2,
+		acceleration: .3,
 		//entropy: 0.005,
 		entropy:0,
-		max: 4,
-		min: -4,
+		max: 3,
+		min: -3,
 		current: {
 			x: 0,
 			y: 0
@@ -69,7 +69,7 @@ var player2 = {
 		y: 240
 	},
 	speed: {
-		change: .2,
+		acceleration: .2,
 		//entropy: 0.005,
 		entropy:0,
 		max: 4,
@@ -109,6 +109,7 @@ var gamespace = {
 };
 
 var isoutside;
+var iscollision;
 
 sketch.attachFunction = function(processing) {
 	// happens when page loads
@@ -141,40 +142,40 @@ sketch.attachFunction = function(processing) {
 		// set fill color
 		processing.fill(player.color.r,player.color.g,player.color.b);
 		// check keyboard input
-		if (
-			processing.keyCode == processing.LEFT || 
-			processing.keyCode == processing.UP || 
-			processing.keyCode == processing.DOWN || 
-			processing.keyCode == processing.RIGHT
-			)
-		{
-			// set the fill color to background color (shadow effect)
-			processing.fill(background.color.r,background.color.g,background.color.b);
-			// draw an ellipse (player starting point)
-			processing.ellipse(player.position.x,player.position.y,player.size.x,player.size.y);	
-			// update speed of player
-			if (processing.keyCode == processing.LEFT)
-			{
-				player.speed.current.x = player.speed.current.x - player.speed.change;
-			}
-			if (processing.keyCode == processing.UP)
-			{
-				//ellipsey = ellipsey - speedchange;
-				player.speed.current.y = player.speed.current.y - player.speed.change;				
-			}
-			if (processing.keyCode == processing.RIGHT)
-			{
-				//ellipsex = ellipsex + speedchange;
-				player.speed.current.x = player.speed.current.x + player.speed.change;
-			}
-			if (processing.keyCode == processing.DOWN)
-			{
-				//ellipsey = ellipsey + speedchange;
-				player.speed.current.y = player.speed.current.y + player.speed.change;					
-			}	
-			//reset keyCode so that it doesn't auto move to the last direction
-			processing.keyCode = null;
-		}
+		// if (
+		// 	processing.keyCode == processing.LEFT || 
+		// 	processing.keyCode == processing.UP || 
+		// 	processing.keyCode == processing.DOWN || 
+		// 	processing.keyCode == processing.RIGHT
+		// 	)
+		// {
+		// 	// set the fill color to background color (shadow effect)
+		// 	processing.fill(background.color.r,background.color.g,background.color.b);
+		// 	// draw an ellipse (player starting point)
+		// 	processing.ellipse(player.position.x,player.position.y,player.size.x,player.size.y);	
+		// 	// update speed of player
+		// 	if (processing.keyCode == processing.LEFT)
+		// 	{
+		// 		player.speed.current.x = player.speed.current.x - player.speed.acceleration;
+		// 	}
+		// 	if (processing.keyCode == processing.UP)
+		// 	{
+		// 		//ellipsey = ellipsey - speedacceleration;
+		// 		player.speed.current.y = player.speed.current.y - player.speed.acceleration;				
+		// 	}
+		// 	if (processing.keyCode == processing.RIGHT)
+		// 	{
+		// 		//ellipsex = ellipsex + speedacceleration;
+		// 		player.speed.current.x = player.speed.current.x + player.speed.acceleration;
+		// 	}
+		// 	if (processing.keyCode == processing.DOWN)
+		// 	{
+		// 		//ellipsey = ellipsey + speedacceleration;
+		// 		player.speed.current.y = player.speed.current.y + player.speed.acceleration;					
+		// 	}	
+		// 	//reset keyCode so that it doesn't auto move to the last direction
+		// 	processing.keyCode = null;
+		// }
 		// apply entropy/friction
 		if (player.speed.current.x > 0) {
 			player.speed.current.x = player.speed.current.x - player.speed.entropy;
@@ -197,6 +198,16 @@ sketch.attachFunction = function(processing) {
 		if (player.position.y < 0) { player.speed.current.y = -player.speed.current.y; }
 		if (player.position.x > background.size.x) { player.speed.current.x = -player.speed.current.x; }
 		if (player.position.y > background.size.y) { player.speed.current.y = -player.speed.current.y; }
+
+		//check if players collided
+		iscollision = playerEdgeDetect();
+
+		if (iscollision ==1)
+		{
+			player.speed.current.x = -player.speed.current.x;
+			player.speed.current.y = -player.speed.current.y;
+		}
+
 		// update position of player
 		player.position.x = player.position.x + player.speed.current.x;	
 		player.position.y = player.position.y + player.speed.current.y;				
@@ -218,6 +229,27 @@ sketch.attachFunction = function(processing) {
 			else
 				return 0;
 		};	
+
+		// define local scope function
+		//way too simple right now
+		function playerEdgeDetect()
+		{
+			var distancex = player.position.x - player2.position.x;
+			var distancey = player.position.y - player2.position.y;
+			
+			var totaldistance = processing.sqrt(distancex*distancex + distancey*distancey);
+			
+			//we know it's a circle, so can just use radius
+			//this also assumes that the two players are the same size 
+			var radius = player.size.x;
+			
+			if (totaldistance <= radius)
+				return 1;
+			else
+				return 0;
+		};	
+
+
 				
 		// set the fill color (player color)
 		processing.fill(player.color.r,player.color.g,player.color.b);
@@ -230,7 +262,7 @@ sketch.attachFunction = function(processing) {
 		processing.ellipse(player2.position.x,player2.position.y,player2.size.x,player2.size.y);
   
 		isoutside = outerCircleEdgeDetect();
-		
+
   		if (isoutside ==1)
 		{
 		// processing.textAlign(processing.CENTER,processing.BOTTOM);
@@ -243,6 +275,36 @@ sketch.attachFunction = function(processing) {
 		}
 
 	};  
+
+	processing.keyPressed = function() {
+	
+		if (processing.key == processing.CODED)
+		{
+		
+			if (processing.keyCode == processing.LEFT)
+			{
+				player.speed.current.x = player.speed.current.x - player.speed.acceleration;
+			}
+			if (processing.keyCode == processing.UP)
+			{
+				//ellipsey = ellipsey - speedacceleration;
+				player.speed.current.y = player.speed.current.y - player.speed.acceleration;				
+			}
+			if (processing.keyCode == processing.RIGHT)
+			{
+				//ellipsex = ellipsex + speedacceleration;
+				player.speed.current.x = player.speed.current.x + player.speed.acceleration;
+			}
+			if (processing.keyCode == processing.DOWN)
+			{
+				//ellipsey = ellipsey + speedacceleration;
+				player.speed.current.y = player.speed.current.y + player.speed.acceleration;					
+			}	
+		
+		
+		}
+	
+	};
 };
 	  
 var canvas = document.getElementById("world");
