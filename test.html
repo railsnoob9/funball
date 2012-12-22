@@ -34,8 +34,6 @@ var background = {
 	}
 };
 
-//var speedacceleration = 2;
-
 var player = {
 	position: {
 		x: 400,
@@ -115,15 +113,12 @@ var keys = { /*up*/38:0, /*down*/40:0, /*left*/37:0, /*right*/39:0 };
   document.addEventListener('keydown', function(e) {
     if(e.keyCode in keys) {
       keys[e.keyCode] = 1;
-       //processing.keyCode = processing.LEFT;
-      //move(keys[39] - keys[37], keys[40] - keys[38])
     }
   }, false);
 
   document.addEventListener('keyup', function(e) {
     if(e.keyCode in keys) {
       keys[e.keyCode] = 0;
-      //move(keys[39] - keys[37], keys[40] - keys[38])
     }
   }, false);
 
@@ -159,10 +154,6 @@ sketch.attachFunction = function(processing) {
 		processing.fill(player.color.r,player.color.g,player.color.b);
 		// check keyboard input
 		if (
-			// processing.keyCode == processing.LEFT || 
-			// processing.keyCode == processing.UP || 
-			// processing.keyCode == processing.DOWN || 
-			// processing.keyCode == processing.RIGHT
 			keys[37] == 1 ||
 			keys[38] == 1 ||
 			keys[39] == 1 ||
@@ -195,33 +186,6 @@ sketch.attachFunction = function(processing) {
 				player.speed.current.y = player.speed.current.y + player.speed.acceleration;					
 			}
 
-			// if (processing.keyCode == processing.LEFT)
-			// {
-			// 	player.speed.current.x = player.speed.current.x - player.speed.acceleration;
-			// }
-			// if (processing.keyCode == processing.UP)
-			// {
-			// 	//ellipsey = ellipsey - speedacceleration;
-			// 	player.speed.current.y = player.speed.current.y - player.speed.acceleration;				
-			// }
-			// if (processing.keyCode == processing.RIGHT)
-			// {
-			// 	//ellipsex = ellipsex + speedacceleration;
-			// 	player.speed.current.x = player.speed.current.x + player.speed.acceleration;
-			// }
-			// if (processing.keyCode == processing.DOWN)
-			// {
-			// 	//ellipsey = ellipsey + speedacceleration;
-			// 	player.speed.current.y = player.speed.current.y + player.speed.acceleration;					
-			// }	
-
-
-			//reset keyCode so that it doesn't auto move to the last direction
-
-			//if (processing.keyPressed ==false)
-			//{
-			//processing.keyCode = null;
-			//}
 		}
 		// apply entropy/friction
 		if (player.speed.current.x > 0) {
@@ -268,7 +232,6 @@ sketch.attachFunction = function(processing) {
 			var totaldistance = processing.sqrt(distancex*distancex + distancey*distancey);
 			
 			//we know it's a circle, so can just use radius
-			//var radius = processing.abs(gamespace.position.x - gamespace.size.width);
 			var radius = gamespace.size.width/2;
 			
 			if (totaldistance > radius)
@@ -296,7 +259,6 @@ sketch.attachFunction = function(processing) {
 				return 0;
 		};	
 
-
 				
 		// set the fill color (player color)
 		processing.fill(player.color.r,player.color.g,player.color.b);
@@ -322,43 +284,6 @@ sketch.attachFunction = function(processing) {
 		}
 
 	};  
-
-	// processing.keyReleased = function(){
-
-	// 	processing.keyCode = null;
-
-	// }
-
-
-	// processing.keyPressed = function() {
-	
-	// 	if (processing.key == processing.CODED)
-	// 	{
-		
-	// 		if (processing.keyCode == processing.LEFT)
-	// 		{
-	// 			player.speed.current.x = player.speed.current.x - player.speed.acceleration;
-	// 		}
-	// 		if (processing.keyCode == processing.UP)
-	// 		{
-	// 			//ellipsey = ellipsey - speedacceleration;
-	// 			player.speed.current.y = player.speed.current.y - player.speed.acceleration;				
-	// 		}
-	// 		if (processing.keyCode == processing.RIGHT)
-	// 		{
-	// 			//ellipsex = ellipsex + speedacceleration;
-	// 			player.speed.current.x = player.speed.current.x + player.speed.acceleration;
-	// 		}
-	// 		if (processing.keyCode == processing.DOWN)
-	// 		{
-	// 			//ellipsey = ellipsey + speedacceleration;
-	// 			player.speed.current.y = player.speed.current.y + player.speed.acceleration;					
-	// 		}	
-		
-		
-	// 	}
-	
-	// };
 };
 	  
 var canvas = document.getElementById("world");
