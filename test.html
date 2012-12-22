@@ -42,10 +42,11 @@ var player = {
 		y: 120
 	},
 	speed: {
-		change: 0.1,
-		entropy: 0.005,
-		max: 2,
-		min: -2,
+		change: .2,
+		//entropy: 0.005,
+		entropy:0,
+		max: 4,
+		min: -4,
 		current: {
 			x: 0,
 			y: 0
@@ -62,6 +63,33 @@ var player = {
 	}
 };
 
+var player2 = {
+	position: {
+		x: 400,
+		y: 240
+	},
+	speed: {
+		change: .2,
+		//entropy: 0.005,
+		entropy:0,
+		max: 4,
+		min: -4,
+		current: {
+			x: 0,
+			y: 0
+		}
+	},
+	size: {
+		x: 50,
+		y: 50
+	},
+	color: {
+		r: 255,
+		g: 25,
+		b: 0
+	}
+};
+
 var gamespace = {
 	position: {
 		x: sizeOfCanvasX/2,
@@ -71,6 +99,12 @@ var gamespace = {
 		width: sizeOfCanvasX/1.6,
 		//height: sizeOfCanvasY/1.1
 		height:sizeOfCanvasX/1.6
+	},
+	gamespaceBackgroundRandom: 0,
+	colorIfSolid:{
+		r: 40,
+		g: 40,
+		b: 50
 	}
 };
 
@@ -84,8 +118,17 @@ sketch.attachFunction = function(processing) {
 	};
 	// happens every frame
 	processing.draw = function() {
-		// set fill color
-		processing.fill(processing.random(255),processing.sin(processing.noise()),50);
+		
+		
+		// set fill color allows us to on the fly determine if we want a random background or not
+		if (gamespace.gamespaceBackgroundRandom == 1)
+		{
+			processing.fill(processing.random(255),processing.sin(processing.noise()),50);
+		}
+		else
+		{
+			processing.fill(gamespace.colorIfSolid.r,gamespace.colorIfSolid.g,gamespace.colorIfSolid.b);
+		}
 		
 		// draw an ellipse--outer (gamespace)	
 		//make it get a bit smaller each frame	
@@ -128,7 +171,9 @@ sketch.attachFunction = function(processing) {
 			{
 				//ellipsey = ellipsey + speedchange;
 				player.speed.current.y = player.speed.current.y + player.speed.change;					
-			}				
+			}	
+			//reset keyCode so that it doesn't auto move to the last direction
+			processing.keyCode = null;
 		}
 		// apply entropy/friction
 		if (player.speed.current.x > 0) {
@@ -141,6 +186,7 @@ sketch.attachFunction = function(processing) {
 		} else if (player.speed.current.y < 0) {
 			player.speed.current.y = player.speed.current.y + player.speed.entropy;
 		}
+		
 		// constrain speed
 		if (player.speed.current.y > player.speed.max) { player.speed.current.y = player.speed.max; }
 		if (player.speed.current.x > player.speed.max) { player.speed.current.x = player.speed.max; }
@@ -177,6 +223,11 @@ sketch.attachFunction = function(processing) {
 		processing.fill(player.color.r,player.color.g,player.color.b);
 		// draw the player ellipse
 		processing.ellipse(player.position.x,player.position.y,player.size.x,player.size.y);
+		
+		// set the fill color (player2 color)
+		processing.fill(player2.color.r,player2.color.g,player2.color.b);
+		// draw the player ellipse
+		processing.ellipse(player2.position.x,player2.position.y,player2.size.x,player2.size.y);
   
 		isoutside = outerCircleEdgeDetect();
 		
@@ -186,8 +237,8 @@ sketch.attachFunction = function(processing) {
 		// processing.textFont(processing.createFont("Arial", 24));	   
 			//losing text
 			processing.textSize(40);
-			processing.fill(0,25,255);
-			processing.text("Blue Loses", sizeOfCanvasX/2, 200,550,550);
+			processing.fill(255,255,255);
+			processing.text("Red Wins", sizeOfCanvasX/2-100, 200,550,550);
 			
 		}
 
