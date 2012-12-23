@@ -15,13 +15,6 @@ var sketch = new Processing.Sketch();
 var sizeOfCanvasX = 800;
 var sizeOfCanvasY = 600;
 
-
-//var ellipsex = 400; //start position
-//var ellipsey = 120; //start position
-
-//var backgroundr = 155;
-//var backgroundg = 155;
-//var backgroundb = 155;
 var background = {
 	color: {
 		r: 155,
@@ -108,6 +101,11 @@ var gamespace = {
 
 var isoutside;
 var iscollision;
+
+
+var num = player.size.x*2;
+var mx = new Array();
+var my = new Array();
 
 var keys = { /*up*/38:0, /*down*/40:0, /*left*/37:0, /*right*/39:0 };
   document.addEventListener('keydown', function(e) {
@@ -259,11 +257,30 @@ sketch.attachFunction = function(processing) {
 				return 0;
 		};	
 
-				
+
+	    // Reads throught the entire array
+	    // and shifts the values to the left
+
+	    for(var i=1; i<num; i++) {
+
+			mx[i-1] = mx[i];
+	 		my[i-1] = my[i];
+
+	    } 
+	    	mx[num-1] = player.position.x;
+  			my[num-1] = player.position.y;
+
+						
 		// set the fill color (player color)
 		processing.fill(player.color.r,player.color.g,player.color.b);
 		// draw the player ellipse
-		processing.ellipse(player.position.x,player.position.y,player.size.x,player.size.y);
+	//	processing.ellipse(player.position.x,player.position.y,player.size.x,player.size.y);
+
+		for(var i=0; i<num; i++) {
+
+    		processing.ellipse(mx[i], my[i], i/2, i/2);
+
+  		}
 		
 		// set the fill color (player2 color)
 		processing.fill(player2.color.r,player2.color.g,player2.color.b);
