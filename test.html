@@ -110,6 +110,7 @@ var gamespace = {
 };
 
 var isoutside;
+var isoutside2;
 var iscollision;
 
 //for tail
@@ -271,10 +272,10 @@ sketch.attachFunction = function(processing) {
 		player2.position.y = player2.position.y + player2.speed.current.y;				
 	
 		// define local scope function
-		function outerCircleEdgeDetect()
+		function outerCircleEdgeDetect(x, y)
 		{
-			var distancex = player.position.x - gamespace.position.x;
-			var distancey = player.position.y - gamespace.position.y;
+			var distancex = x - gamespace.position.x;
+			var distancey = y - gamespace.position.y;
 			
 			var totaldistance = processing.sqrt(distancex*distancex + distancey*distancey);
 			
@@ -344,15 +345,30 @@ sketch.attachFunction = function(processing) {
     		processing.ellipse(player2.tail.tailmx[i], player2.tail.tailmy[i], i, i);
   		}
   
-		isoutside = outerCircleEdgeDetect();
+		isoutside = outerCircleEdgeDetect(player.position.x, player.position.y);
+		isoutside2 = outerCircleEdgeDetect(player2.position.x, player2.position.y);
 
-  		if (isoutside ==1)
+		//end of game texts
+  		if (isoutside ==1 && isoutside2 ==0)
 		{
-			//losing text
 			processing.textSize(40);
 			processing.fill(255,255,255);
 			processing.text("Red Wins", sizeOfCanvasX/2-100, 200,550,550);
 		}
+		if (isoutside ==0 && isoutside2 ==1)
+		{
+			processing.textSize(40);
+			processing.fill(255,255,255);
+			processing.text("Blue Wins", sizeOfCanvasX/2-100, 200,550,550);
+		}
+		if (isoutside ==1 && isoutside2 ==1)
+		{
+			processing.textSize(40);
+			processing.fill(255,255,255);
+			processing.text("Draw", sizeOfCanvasX/2-100, 200,550,550);
+		}
+
+
 
 	};  
 };
