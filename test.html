@@ -28,6 +28,10 @@ var background = {
 };
 
 var player = {
+	tail: {
+		tailmx: new Array(),
+		tailmy: new Array()
+	},
 	position: {
 		x: 400,
 		y: 120
@@ -45,7 +49,8 @@ var player = {
 	},
 	size: {
 		x: 50,
-		y: 50
+		y: 50,
+		mass: 1
 	},
 	color: {
 		r: 0,
@@ -55,6 +60,10 @@ var player = {
 };
 
 var player2 = {
+	tail: {
+		tailmx: new Array(),
+		tailmy: new Array()
+	},
 	position: {
 		x: 400,
 		y: 240
@@ -72,7 +81,8 @@ var player2 = {
 	},
 	size: {
 		x: 50,
-		y: 50
+		y: 50,
+		mass: 1
 	},
 	color: {
 		r: 255,
@@ -102,10 +112,8 @@ var gamespace = {
 var isoutside;
 var iscollision;
 
+//for tail
 
-var num = player.size.x*2;
-var mx = new Array();
-var my = new Array();
 
 var keys = { /*up*/38:0, /*down*/40:0, /*left*/37:0, /*right*/39:0 };
   document.addEventListener('keydown', function(e) {
@@ -207,19 +215,60 @@ sketch.attachFunction = function(processing) {
 		if (player.position.y < 0) { player.speed.current.y = -player.speed.current.y; }
 		if (player.position.x > background.size.x) { player.speed.current.x = -player.speed.current.x; }
 		if (player.position.y > background.size.y) { player.speed.current.y = -player.speed.current.y; }
+		//player2
+		if (player2.position.x < 0) { player2.speed.current.x = -player2.speed.current.x; }
+		if (player2.position.y < 0) { player2.speed.current.y = -player2.speed.current.y; }
+		if (player2.position.x > background.size.x) { player2.speed.current.x = -player2.speed.current.x; }
+		if (player2.position.y > background.size.y) { player2.speed.current.y = -player2.speed.current.y; }
 
-		//check if players collided
-		iscollision = playerEdgeDetect();
+		handleCollision();
 
-		if (iscollision ==1)
+		function handleCollision()
 		{
-			player.speed.current.x = -player.speed.current.x;
-			player.speed.current.y = -player.speed.current.y;
+			//check if players collided
+			iscollision = playerEdgeDetect();
+
+			if (iscollision ==1)
+			{
+
+				var distancex = player.position.x - player2.position.x;
+				var distancey = player.position.y - player2.position.y;
+
+				var collisionision_angle = processing.atan2(distancey, distancex);
+
+
+				var magnitude_1 = processing.sqrt(player.speed.current.x*player.speed.current.x+player.speed.current.y*player.speed.current.y);
+				var magnitude_2 = processing.sqrt(player2.speed.current.x*player2.speed.current.x+player2.speed.current.y*player2.speed.current.y);
+				var direction_1 = processing.atan2(player.speed.current.y, player.speed.current.x);
+				var direction_2 = processing.atan2(player2.speed.current.y, player2.speed.current.x);
+
+				var new_xspeed_1 = magnitude_1*processing.cos(direction_1-collisionision_angle);
+				var new_yspeed_1 = magnitude_1*processing.sin(direction_1-collisionision_angle);
+				var new_xspeed_2 = magnitude_2*processing.cos(direction_2-collisionision_angle);
+				var new_yspeed_2 = magnitude_2*processing.sin(direction_2-collisionision_angle);
+
+
+				var final_xspeed_1 = ((player.size.mass-player2.size.mass)*new_xspeed_1+(player2.size.mass+player2.size.mass)*new_xspeed_2)/
+					(player.size.mass+player2.size.mass);
+				var final_xspeed_2 = ((player.size.mass+player.size.mass)*new_xspeed_1+(player.size.mass-player2.size.mass)*new_xspeed_2)/
+					(player.size.mass+player2.size.mass);
+				var final_yspeed_1 = new_yspeed_1;
+				var final_yspeed_2 = new_yspeed_2;
+
+				player.speed.current.x = processing.cos(collisionision_angle)*final_xspeed_1+processing.cos(collisionision_angle+processing.PI/2)*final_yspeed_1;
+				player.speed.current.y = processing.sin(collisionision_angle)*final_xspeed_1+processing.sin(collisionision_angle+processing.PI/2)*final_yspeed_1;
+				player2.speed.current.x = processing.cos(collisionision_angle)*final_xspeed_2+processing.cos(collisionision_angle+processing.PI/2)*final_yspeed_2;
+				player2.speed.current.y = processing.sin(collisionision_angle)*final_xspeed_2+processing.sin(collisionision_angle+processing.PI/2)*final_yspeed_2;
+			}
 		}
+
 
 		// update position of player
 		player.position.x = player.position.x + player.speed.current.x;	
-		player.position.y = player.position.y + player.speed.current.y;				
+		player.position.y = player.position.y + player.speed.current.y;	
+
+		player2.position.x = player2.position.x + player2.speed.current.x;	
+		player2.position.y = player2.position.y + player2.speed.current.y;				
 	
 		// define local scope function
 		function outerCircleEdgeDetect()
@@ -258,46 +307,51 @@ sketch.attachFunction = function(processing) {
 		};	
 
 
+		//tail stuff
+
 	    // Reads throught the entire array
 	    // and shifts the values to the left
-
-	    for(var i=1; i<num; i++) {
-
-			mx[i-1] = mx[i];
-	 		my[i-1] = my[i];
-
+	    for(var i=1; i<player.size.x; i++) {
+			player.tail.tailmx[i-1] = player.tail.tailmx[i];
+	 		player.tail.tailmy[i-1] = player.tail.tailmy[i];
 	    } 
-	    	mx[num-1] = player.position.x;
-  			my[num-1] = player.position.y;
+	    for(var i=1; i<player2.size.x; i++) {
+			player2.tail.tailmx[i-1] = player2.tail.tailmx[i];
+	 		player2.tail.tailmy[i-1] = player2.tail.tailmy[i];
+	    } 
+
+	    player.tail.tailmx[player.size.x-1] = player.position.x;
+  		player.tail.tailmy[player.size.x-1] = player.position.y;
+  		player2.tail.tailmx[player2.size.x-1] = player2.position.x;
+  		player2.tail.tailmy[player2.size.x-1] = player2.position.y;
 
 						
 		// set the fill color (player color)
 		processing.fill(player.color.r,player.color.g,player.color.b);
 		// draw the player ellipse
-	//	processing.ellipse(player.position.x,player.position.y,player.size.x,player.size.y);
 
-		for(var i=0; i<num; i++) {
-
-    		processing.ellipse(mx[i], my[i], i/2, i/2);
-
+		//draw tails
+		for(var i=0; i<player.size.x; i++) {
+    		processing.ellipse(player.tail.tailmx[i], player.tail.tailmy[i], i, i);
   		}
 		
 		// set the fill color (player2 color)
 		processing.fill(player2.color.r,player2.color.g,player2.color.b);
 		// draw the player ellipse
 		processing.ellipse(player2.position.x,player2.position.y,player2.size.x,player2.size.y);
+
+		for(var i=0; i<player2.size.x; i++) {
+    		processing.ellipse(player2.tail.tailmx[i], player2.tail.tailmy[i], i, i);
+  		}
   
 		isoutside = outerCircleEdgeDetect();
 
   		if (isoutside ==1)
 		{
-		// processing.textAlign(processing.CENTER,processing.BOTTOM);
-		// processing.textFont(processing.createFont("Arial", 24));	   
 			//losing text
 			processing.textSize(40);
 			processing.fill(255,255,255);
 			processing.text("Red Wins", sizeOfCanvasX/2-100, 200,550,550);
-			
 		}
 
 	};  
