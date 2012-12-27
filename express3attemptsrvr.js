@@ -2,7 +2,7 @@ var app = require('express')()
   , server = require('http').createServer(app)
   , io = require('socket.io').listen(server);
 
-server.listen(8080);
+server.listen(8989);
 
 app.get('/', function (req, res) {
   res.sendfile(__dirname + '/express3index.html');
@@ -11,7 +11,8 @@ app.get('/', function (req, res) {
 io.sockets.on('connection', function (socket) {
   socket.emit('news', { hello: 'client' });
   socket.on('my other event', function (data) {
-  	//data = data + "I ADDED THIS SHIT FROM THE SERVER";
+  	data.my = data.my + "     I ADDED THIS SHIT FROM THE SERVER";
+  	data.another = "THIS IS ANOTHER THING";
     console.log(data);
   });
 });
