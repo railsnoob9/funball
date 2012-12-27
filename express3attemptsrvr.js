@@ -9,10 +9,13 @@ app.get('/', function (req, res) {
 });
 
 io.sockets.on('connection', function (socket) {
-  socket.emit('news', { hello: 'client' });
-  socket.on('my other event', function (data) {
-  	data.my = data.my + "     I ADDED THIS SHIT FROM THE SERVER";
-  	data.another = "THIS IS ANOTHER THING";
+	var address = socket.handshake.address;
+    console.log("New connection from " + address.address + ":" + address.port);
+
+    socket.emit('news', { hello: 'client' });
+    socket.on('my other event', function (data) {
+  		data.directionFromClient = data.directionFromClient + "     Oh shit, red just bumped into you -server";
+  		data.another = "THIS IS ANOTHER THING on the server";
     console.log(data);
   });
 });
