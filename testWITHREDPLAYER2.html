@@ -14,10 +14,13 @@
 var sketch = new Processing.Sketch();
 var sizeOfCanvasX = 800;
 var sizeOfCanvasY = 600;
+var isGameOver = 0;
+//var globalCounter = 0;
 
-var globalAccel = .02;
-var globalMax = 99999;
-var globalMin = -99999;
+var globalAccel = .0173;
+//var globalAccel = 10;
+var globalMax = 100;
+var globalMin = -100;
 
 var background = {
 	color: {
@@ -26,8 +29,8 @@ var background = {
 		b: 155
 	},
 	size: {
-		x: 800,
-		y: 600
+		x: sizeOfCanvasX,
+		y: sizeOfCanvasY
 	}
 };
 
@@ -174,6 +177,7 @@ sketch.attachFunction = function(processing) {
 		
 		// set stroke color
 		processing.stroke(background.color.r,background.color.g,background.color.b);
+		//processing.noStroke();
 		// set fill color
 		processing.fill(player.color.r,player.color.g,player.color.b);
 		// check keyboard input
@@ -390,6 +394,9 @@ sketch.attachFunction = function(processing) {
 		processing.fill(player.color.r,player.color.g,player.color.b);
 		// draw the player ellipse
 
+	//	var playerColor= processing.color(player.color.r,player.color.g,player.color.b);
+
+	//	processing.fill(playerColor,15);
 		//draw tails
 		for(var i=0; i<player.size.x; i++) {
     		processing.ellipse(player.tail.tailmx[i], player.tail.tailmy[i], i, i);
@@ -413,19 +420,31 @@ sketch.attachFunction = function(processing) {
 			processing.textSize(40);
 			processing.fill(255,255,255);
 			processing.text("Red Wins", sizeOfCanvasX/2-100, 200,550,550);
+			isGameOver = 1;
 		}
 		if (isoutside ==0 && isoutside2 ==1)
 		{
 			processing.textSize(40);
 			processing.fill(255,255,255);
 			processing.text("Blue Wins", sizeOfCanvasX/2-100, 200,550,550);
+			isGameOver = 1;
 		}
 		if (isoutside ==1 && isoutside2 ==1)
 		{
 			processing.textSize(40);
 			processing.fill(255,255,255);
 			processing.text("Draw", sizeOfCanvasX/2-100, 200,550,550);
+			isGameOver = 1;
 		}
+
+		// if (isGameOver ==1)
+		// {
+		// 	player.speed.current.x = player.speed.current.x / 20;
+		// 	player.speed.current.y = player.speed.current.y / 20;
+
+		// 	player2.speed.current.x = player2.speed.current.x / 20;
+		// 	player2.speed.current.y = player2.speed.current.y / 20;
+		// }
 
 
 
