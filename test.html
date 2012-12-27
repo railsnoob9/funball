@@ -14,6 +14,7 @@
 var sketch = new Processing.Sketch();
 var sizeOfCanvasX = 800;
 var sizeOfCanvasY = 600;
+var frameRate = 240;
 
 var globalAccel = .0173;
 //var globalAccel = 10;
@@ -139,7 +140,8 @@ sketch.attachFunction = function(processing) {
 	// happens when page loads
 	processing.setup = function() {
 		processing.size(sizeOfCanvasX, sizeOfCanvasY);
-		processing.background(background.color.r,background.color.g,background.color.b);	  
+		processing.background(background.color.r,background.color.g,background.color.b);	
+		processing.frameRate(frameRate);  
 	};
 	// happens every frame
 	processing.draw = function() {
