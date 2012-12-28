@@ -21,7 +21,17 @@ var globalAccel = .0173;
 var globalMax = 100;
 var globalMin = -100;
 
+
+
 var game = {
+
+  //not really necessary, but may be useful
+  background: {
+  	size: {
+		x: 800,
+		y: 600
+	}
+  },
   space: {
     size: {
       width: sizeOfCanvasX/1.6,

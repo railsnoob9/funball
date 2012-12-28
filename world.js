@@ -72,10 +72,9 @@ function handleGameLoop(game)
 		game.space.size.height = game.space.size.height -.05;	
 
 
+		constrainSpeedAndPosition(game);
 		updatePlayerSpeedBasedOnInput(game);
-
 		handlePossibleCollision(game);
-
 		updatePlayerPositions(game);
 
 
@@ -92,6 +91,31 @@ function handleGameLoop(game)
 
 	}
 
+}
+
+function constrainSpeedAndPosition(game)
+{
+	// constrain speed
+	if (game.players.red.speed.current.y > game.players.red.speed.max) { game.players.red.speed.current.y = game.players.red.speed.max; }
+	if (game.players.red.speed.current.x > game.players.red.speed.max) { game.players.red.speed.current.x = game.players.red.speed.max; }
+	if (game.players.red.speed.current.y < game.players.red.speed.min) { game.players.red.speed.current.y = game.players.red.speed.min; }
+	if (game.players.red.speed.current.x < game.players.red.speed.min) { game.players.red.speed.current.x = game.players.red.speed.min; }	
+	// player2
+	if (game.players.blue.speed.current.y > game.players.blue.speed.max) { game.players.blue.speed.current.y = game.players.blue.speed.max; }
+	if (game.players.blue.speed.current.x > game.players.blue.speed.max) { game.players.blue.speed.current.x = game.players.blue.speed.max; }
+	if (game.players.blue.speed.current.y < game.players.blue.speed.min) { game.players.blue.speed.current.y = game.players.blue.speed.min; }
+	if (game.players.blue.speed.current.x < game.players.blue.speed.min) { game.players.blue.speed.current.x = game.players.blue.speed.min; }
+
+	// contrain position
+	if (game.players.red.position.x < 0) { game.players.red.speed.current.x = -game.players.red.speed.current.x; }
+	if (game.players.red.position.y < 0) { game.players.red.speed.current.y = -game.players.red.speed.current.y; }
+	if (game.players.red.position.x > game.background.size.x) { game.players.red.speed.current.x = -game.players.red.speed.current.x; }
+	if (game.players.red.position.y > game.background.size.y) { game.players.red.speed.current.y = -game.players.red.speed.current.y; }
+	//player2
+	if (game.players.blue.position.x < 0) { game.players.blue.speed.current.x = -game.players.blue.speed.current.x; }
+	if (game.players.blue.position.y < 0) { game.players.blue.speed.current.y = -game.players.blue.speed.current.y; }
+	if (game.players.blue.position.x > game.background.size.x) { game.players.blue.speed.current.x = -game.players.blue.speed.current.x; }
+	if (game.players.blue.position.y > game.background.size.y) { game.players.blue.speed.current.y = -game.players.blue.speed.current.y; }
 }
 
 function handlePossibleCollision(game)
@@ -135,12 +159,70 @@ function handlePossibleCollision(game)
 
 function updatePlayerSpeedBasedOnInput(game)
 {
+	//blue update
+	if (
+		game.players.blue.keys[37] == 1 ||
+		game.players.blue.keys[38] == 1 ||
+		game.players.blue.keys[39] == 1 ||
+		game.players.blue.keys[40] == 1
+		)
+	{
+		// update speed of player
+		if (game.players.blue.keys[37]==1)
+		{
+			game.players.blue.speed.current.x = game.players.blue.speed.current.x - game.players.blue.speed.acceleration;
+		}
+		if (game.players.blue.keys[38]==1)
+		{
+			game.players.blue.speed.current.y = game.players.blue.speed.current.y - game.players.blue.speed.acceleration;				
+		}
+		if (game.players.blue.keys[39]==1)
+		{
+			game.players.blue.speed.current.x = game.players.blue.speed.current.x + game.players.blue.speed.acceleration;
+		}
+		if (game.players.blue.keys[40]==1)
+		{
+			game.players.blue.speed.current.y = game.players.blue.speed.current.y + game.players.blue.speed.acceleration;					
+		}
 
+	}
+
+	//red update
+	if (
+		game.players.red.keys[37] == 1 ||
+		game.players.red.keys[38] == 1 ||
+		game.players.red.keys[39] == 1 ||
+		game.players.red.keys[40] == 1
+		)
+	{
+		// update speed of player
+		if (game.players.red.keys[37]==1)
+		{
+			game.players.red.speed.current.x = game.players.red.speed.current.x - game.players.red.speed.acceleration;
+		}
+		if (game.players.red.keys[38]==1)
+		{
+			game.players.red.speed.current.y = game.players.red.speed.current.y - game.players.red.speed.acceleration;				
+		}
+		if (game.players.red.keys[39]==1)
+		{
+			game.players.red.speed.current.x = game.players.red.speed.current.x + game.players.red.speed.acceleration;
+		}
+		if (game.players.red.keys[40]==1)
+		{
+			game.players.red.speed.current.y = game.players.red.speed.current.y + game.players.red.speed.acceleration;					
+		}
+
+	}
 }
 
 function updatePlayerPositions(game)
 {
+	game.players.red.position.x = game.players.red.position.x + game.players.red.speed.current.x;	
+	game.players.red.position.y = game.players.red.position.y + game.players.red.speed.current.y;	
 
+	game.players.blue.position.x = game.players.blue.position.x + game.players.blue.speed.current.x;	
+	game.players.blue.position.y = game.players.blue.position.y + game.players.blue.speed.current.y;	
 }
 
 //determines if player has lost (i.e. outside of gamespace)
