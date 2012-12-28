@@ -29,7 +29,7 @@ exports.create = function(game) {
 function handleGameLoop(game)
 {
 	//while (true)
-	for (var i=0;i<100;i++)
+	for (var i=0;i<1000000;i++)
 	{
 		//update game space (i.e. make it smaller)
 		game.space.size.width = game.space.size.width -.05;

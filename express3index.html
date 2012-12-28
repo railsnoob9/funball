@@ -6,19 +6,49 @@
 	<script>
 		var socket = io.connect('http://localhost:8989');
 		socket.on('HEROO', function (data) {
-	    	console.log(data);
-	    socket.emit('IAMCONNECTING', 
-			{ shalom: 'shalom'});
-	  });
+		    console.log(data);
+		    socket.emit('IAMCONNECTING', { shalom: 'shalom'});
+	 	 });
 
-	$("#button").click(function(){
-	    socket.emit('clientMessage', 
-			{ 
-				directionFromClient: 'HEY YOU, I MOVED LEFT -client', 
-				aclientnother: "THIS IS ANOTHER TING FROM TE VCLIENT" 
+		// $("#button").click(function(){
+		//     socket.emit('clientMessage', 
+		// 		{ 
+		// 			directionFromClient: 'HEY YOU, I MOVED LEFT -client', 
+		// 			aclientnother: "THIS IS ANOTHER TING FROM TE VCLIENT" 
+		// 		}
+		// 	);
+
+	 //  	});
+
+		var keys = { /*up*/38:0, /*down*/40:0, /*left*/37:0, /*right*/39:0 };
+		document.addEventListener('keydown', function(e) {
+			if(e.keyCode in keys) {
+		    	keys[e.keyCode] = 1;
+
+		    	if (e.keyCode ==38)
+		    		socket.emit('clientMessage', {directionFromClient: 'keydown_up'});
+		    	if (e.keyCode ==40)
+		    		socket.emit('clientMessage', {directionFromClient: 'keydown_down'});
+		    	if (e.keyCode ==37)
+		    		socket.emit('clientMessage', {directionFromClient: 'keydown_left'});
+		    	if (e.keyCode ==39)
+		    		socket.emit('clientMessage', {directionFromClient: 'keydown_right'});
 			}
-		);
+		}, false);
 
-  	});
+		document.addEventListener('keyup', function(e) {
+			if(e.keyCode in keys) {
+		  		keys[e.keyCode] = 0;
+
+		  		if (e.keyCode ==38)
+		    		socket.emit('clientMessage', {directionFromClient: 'keyup_up'});
+		    	if (e.keyCode ==40)
+		    		socket.emit('clientMessage', {directionFromClient: 'keyup_down'});
+		    	if (e.keyCode ==37)
+		    		socket.emit('clientMessage', {directionFromClient: 'keyup_left'});
+		    	if (e.keyCode ==39)
+		    		socket.emit('clientMessage', {directionFromClient: 'keyup_right'});
+			}
+		}, false);
 	</script>
 </html>
