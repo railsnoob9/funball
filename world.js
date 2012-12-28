@@ -78,12 +78,14 @@ function handleGameLoop(game)
 		updatePlayerPositions(game);
 
 
+		sendPositionsToClients(game);
+
 		//check if game is over
 		var isOutsideRed = outerCircleEdgeDetect(game, game.players.red.position.x,game.players.red.position.y);
 		var isOutsideBlue = outerCircleEdgeDetect(game, game.players.blue.position.x,game.players.blue.position.y);
 
-		//game is over
-		if (checkIfGameOver(game, isOutsideBlue,isOutsideRed)!=0)
+		//Round is over
+		if (checkIfRoundOver(game, isOutsideBlue,isOutsideRed)!=0)
 		{
 			//DO STUFF HERE()?
 			break;
@@ -91,6 +93,22 @@ function handleGameLoop(game)
 
 	}
 
+}
+
+function sendPositionsToClients(game)
+{
+		game.players.red.socket.emit('positions', { 
+			redxposition: game.players.red.position.x,
+			redyposition: game.players.red.position.y,
+			bluexposition: game.players.blue.position.x,
+			blueyposition: game.players.blue.position.y
+		});
+		game.players.blue.socket.emit('positions', { 
+			redxposition: game.players.red.position.x,
+			redyposition: game.players.red.position.y,
+			bluexposition: game.players.blue.position.x,
+			blueyposition: game.players.blue.position.y
+		});
 }
 
 function constrainSpeedAndPosition(game)
@@ -243,7 +261,7 @@ function outerCircleEdgeDetect(game, x, y)
 };	
 
 
-function checkIfGameOver(game, isOutsideBlue, isOutsideRed)
+function checkIfRoundOver(game, isOutsideBlue, isOutsideRed)
 {
 
 	//blue wins
