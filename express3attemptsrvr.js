@@ -13,49 +13,89 @@ app.get('/', function (req, res) {
 io.set('log', 0);
 
 // example of structure of global games array
-// var games = [];
+var games = [];
 
-// var game = {
-//   players: {   
-//     red: {
-//       address: '0.0.0.0:0000',
-//       position: {
-//         x: 0,
-//         y: 0
-//       },
-//       moves: []
-//     },
-//     blue: {
-//       address: '0.0.0.0:0000',
-//       position: {
-//         x: 0,
-//         y: 0
-//       },
-//       moves: []
-//     }
-//   },
-//   index: 1
-// };
+var game = {
+  space: {
+    size: {
+      width: 0,
+      height: 0
+    }
+  },
+  players: {   
+    red: {
+      unique_address: '0.0.0.0:0000',
+      socket: 0,
+      position: {
+        x: 400,
+        y: 120
+      },
+      speed: {
+        x: 0,
+        y: 0
+      },
+      // past moves
+      moves: []
+    },
+    blue: {
+      unique_address: '0.0.0.0:0000',
+      socket: 0,
+      position: {
+       x: 400,
+       y: 440
+      },
+      speed: {
+        x: 0,
+        y: 0
+      },      
+      moves: []
+    }
+  }
+};
 
+var playersAddresses = [];
 var players = [];
 
-anything = function (socket) {
-    game.players.test(2);
+anything = function (socket) {    
     var address = socket.handshake.address;
     var id = socket.id;
     var unique_address = address.address + ":" + address.port;
     
     // players is an array of socket ids of connected players
     // indexOf searches the array and returns -1 if not found    
-    if(players.indexOf(unique_address) == -1)
+    if(playersAddresses.indexOf(unique_address) == -1)
     {
       console.log("New connection from " + address.address + ":" + address.port + ", with id " + id);
         // this is a new player
-        players[players.length] = {:socket;
+        playersAddresses[playersAddresses.length] = unique_address;
+
+        //hacky to just set up two players to test sockets n(') shit(e)
+        if (players.length ==0)
+        {
+          players[players.length] = {
+              socket: socket    
+          };
+          game.players.red.unique_address = unique_address;
+          game.players.red.socket = socket;
+        }
+        else if (players.length ==1)
+        {
+          players[players.length] = {
+              socket: socket    
+          };
+          game.players.blue.unique_address = unique_address;
+          game.players.blue.socket = socket;
+        }
     }
     else
     {
-      console.log("The following has already connected:" + address.address + ":" + address.port + ", with id " + id);
+      console.log("Already connected:" + address.address + ":" + address.port + ", id " + id);
+      console.log(players[playersAddresses.indexOf(unique_address)].socket.id);
+    }
+
+    if (players.length==2)
+    {
+      games[games.length] = require('./world').create(game);  
     }
 
     // sends data back to the client that just connected
