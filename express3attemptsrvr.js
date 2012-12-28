@@ -14,44 +14,76 @@ io.set('log', 0);
 
 // example of structure of global games array
 var games = [];
+var sizeOfCanvasX = 800;
+var sizeOfCanvasY = 600;
+
+var globalAccel = .0173;
+var globalMax = 100;
+var globalMin = -100;
 
 var game = {
   space: {
     size: {
-      width: 800/1.6,
-      height: 800/1.6
+      width: sizeOfCanvasX/1.6,
+      height: sizeOfCanvasX/1.6
     },
     position: {
-    	x: 800/2,
-		y: 600/2
+    	x: sizeOfCanvasX/2,
+		y: sizeOfCanvasY/2
     }
   },
   players: {   
     red: {
+      keys: { /*up*/38:0, /*down*/40:0, /*left*/37:0, /*right*/39:0 },
       unique_address: '0.0.0.0:0000',
       socket: 0,
       position: {
         x: 400,
         y: 120
       },
-      speed: {
-        x: 0,
-        y: 0
-      },
+	  speed: {
+		acceleration: globalAccel,
+		//entropy: 0.005,
+		entropy:0,
+		max: globalMax,
+		min: globalMin,
+		current: {
+			x: 0,
+			y: 0
+		}
+	},
+	  size: {
+		x: 50,
+		y: 50,
+		mass: 1
+	  },
       // past moves
       moves: []
     },
     blue: {
+   	  keys: { /*up*/38:0, /*down*/40:0, /*left*/37:0, /*right*/39:0 },
       unique_address: '0.0.0.0:0000',
       socket: 0,
       position: {
        x: 400,
        y: 440
       },
-      speed: {
-        x: 0,
-        y: 0
-      },      
+	  speed: {
+		acceleration: globalAccel,
+		//entropy: 0.005,
+		entropy:0,
+		max: globalMax,
+		min: globalMin,
+		current: {
+			x: 0,
+			y: 0
+		}
+	},      
+      size: {
+		x: 50,
+		y: 50,
+		mass: 1
+	  },
       moves: []
     }
   }

@@ -26,13 +26,22 @@
 		    	keys[e.keyCode] = 1;
 
 		    	if (e.keyCode ==38)
-		    		socket.emit('clientMessage', {directionFromClient: 'keydown_up'});
+		    		socket.emit('38', {directionFromClient: '1'});
 		    	if (e.keyCode ==40)
-		    		socket.emit('clientMessage', {directionFromClient: 'keydown_down'});
+		    		socket.emit('40', {directionFromClient: '1'});
 		    	if (e.keyCode ==37)
-		    		socket.emit('clientMessage', {directionFromClient: 'keydown_left'});
+		    		socket.emit('37', {directionFromClient: '1'});
 		    	if (e.keyCode ==39)
-		    		socket.emit('clientMessage', {directionFromClient: 'keydown_right'});
+		    		socket.emit('39', {directionFromClient: '1'});
+
+		    	// if (e.keyCode ==38)
+		    	// 	socket.emit('clientMessage', {directionFromClient: 'keydown_up'});
+		    	// if (e.keyCode ==40)
+		    	// 	socket.emit('clientMessage', {directionFromClient: 'keydown_down'});
+		    	// if (e.keyCode ==37)
+		    	// 	socket.emit('clientMessage', {directionFromClient: 'keydown_left'});
+		    	// if (e.keyCode ==39)
+		    	// 	socket.emit('clientMessage', {directionFromClient: 'keydown_right'});
 			}
 		}, false);
 
@@ -41,13 +50,22 @@
 		  		keys[e.keyCode] = 0;
 
 		  		if (e.keyCode ==38)
-		    		socket.emit('clientMessage', {directionFromClient: 'keyup_up'});
+		    		socket.emit('38', {directionFromClient: '0'});
 		    	if (e.keyCode ==40)
-		    		socket.emit('clientMessage', {directionFromClient: 'keyup_down'});
+		    		socket.emit('40', {directionFromClient: '0'});
 		    	if (e.keyCode ==37)
-		    		socket.emit('clientMessage', {directionFromClient: 'keyup_left'});
+		    		socket.emit('37', {directionFromClient: '0'});
 		    	if (e.keyCode ==39)
-		    		socket.emit('clientMessage', {directionFromClient: 'keyup_right'});
+		    		socket.emit('39', {directionFromClient: '0'});
+
+		    	// if (e.keyCode ==38)
+		    	// 	socket.emit('clientMessage', {directionFromClient: 'keyup_up'});
+		    	// if (e.keyCode ==40)
+		    	// 	socket.emit('clientMessage', {directionFromClient: 'keyup_down'});
+		    	// if (e.keyCode ==37)
+		    	// 	socket.emit('clientMessage', {directionFromClient: 'keyup_left'});
+		    	// if (e.keyCode ==39)
+		    	// 	socket.emit('clientMessage', {directionFromClient: 'keyup_right'});
 			}
 		}, false);
 	</script>
