@@ -4,6 +4,7 @@ exports.create = function(game) {
 
 	//just for reference { /*up*/38:0, /*down*/40:0, /*left*/37:0, /*right*/39:0 };
 
+	//will show either 1 if keydown and 0 if keyup
 	//for blue
 	game.players.blue.socket.on('38', function (data){
 		console.log("blue says 38 (up) is " + data.directionFromClient);
