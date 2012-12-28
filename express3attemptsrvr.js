@@ -18,8 +18,12 @@ var games = [];
 var game = {
   space: {
     size: {
-      width: 0,
-      height: 0
+      width: 800/1.6,
+      height: 800/1.6
+    },
+    position: {
+    	x: 800/2,
+		y: 600/2
     }
   },
   players: {   
