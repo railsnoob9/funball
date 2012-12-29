@@ -11,7 +11,9 @@
     </div> 
 
 
-    <script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script src="socket.io/socket.io.js"></script>
+	<script>
     // LOCAL SIMULATION
 	var sketch = new Processing.Sketch();
 	var sizeOfCanvasX = 800;
@@ -128,6 +130,13 @@
 		37:0, /*left*/
 		39:0  /*right*/
 	};
+	var opponentkeys = { 
+		38:0, /*up*/
+		40:0, /*down*/
+		37:0, /*left*/
+		39:0  /*right*/
+	};
+
 	// keyboard key pressed event
 	document.addEventListener('keydown', function(e) {
 		// check if this event's keypress is a valid command
@@ -167,78 +176,77 @@
 	function draw() {
 	    window.requestAnimationFrame(draw);
 	}
-    </script>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-	<script src="socket.io/socket.io.js"></script>
-	<script>
-		// REMOTE SIMULATION
-		var socket = io.connect('http://localhost:8989');
-		// socket connection event
-		socket.on('HEROO', function (data) {
-		    console.log(data);
-		    socket.emit('IAMCONNECTING', { shalom: 'sup bro'});
-	 	});
-		// INPUT
-		var keys = { 
-			38:0, /*up*/
-			40:0, /*down*/
-			37:0, /*left*/
-			39:0  /*right*/
-		};
-		// keyboard key pressed event
-		document.addEventListener('keydown', function(e) {
-			// check if this event's keypress is a valid command
-			if(e.keyCode in keys) {
-				// force 'on' state for this key
-		    	keys[e.keyCode] = 1;
-		    	// send this command to the server
-		    	// socket.emit(port, data) sends data through the specified port to the server
-		    	if (e.keyCode ==38)
-		    		socket.emit('38', {directionFromClient: '1'});
-		    	if (e.keyCode ==40)
-		    		socket.emit('40', {directionFromClient: '1'});
-		    	if (e.keyCode ==37)
-		    		socket.emit('37', {directionFromClient: '1'});
-		    	if (e.keyCode ==39)
-		    		socket.emit('39', {directionFromClient: '1'});
 
-		    	// if (e.keyCode ==38)
-		    	// 	socket.emit('clientMessage', {directionFromClient: 'keydown_up'});
-		    	// if (e.keyCode ==40)
-		    	// 	socket.emit('clientMessage', {directionFromClient: 'keydown_down'});
-		    	// if (e.keyCode ==37)
-		    	// 	socket.emit('clientMessage', {directionFromClient: 'keydown_left'});
-		    	// if (e.keyCode ==39)
-		    	// 	socket.emit('clientMessage', {directionFromClient: 'keydown_right'});
-			}
-		}, false);
-		// keyboard key released event
-		document.addEventListener('keyup', function(e) {
-			// check if this event's keypress is a valid command
-			if(e.keyCode in keys) {
-				// force 'off' state for this key
-		  		keys[e.keyCode] = 0;
-	  			// send this command to the server
-		  		if (e.keyCode ==38)
-		    		socket.emit('38', {directionFromClient: '0'});
-		    	if (e.keyCode ==40)
-		    		socket.emit('40', {directionFromClient: '0'});
-		    	if (e.keyCode ==37)
-		    		socket.emit('37', {directionFromClient: '0'});
-		    	if (e.keyCode ==39)
-		    		socket.emit('39', {directionFromClient: '0'});
 
-		    	// if (e.keyCode ==38)
-		    	// 	socket.emit('clientMessage', {directionFromClient: 'keyup_up'});
-		    	// if (e.keyCode ==40)
-		    	// 	socket.emit('clientMessage', {directionFromClient: 'keyup_down'});
-		    	// if (e.keyCode ==37)
-		    	// 	socket.emit('clientMessage', {directionFromClient: 'keyup_left'});
-		    	// if (e.keyCode ==39)
-		    	// 	socket.emit('clientMessage', {directionFromClient: 'keyup_right'});
-			}
-		}, false);
+
+
+
+	// HANDLE SENDING INPUT TO SERVER
+	var socket = io.connect('http://localhost:8989');
+	// socket connection event
+	socket.on('HEROO', function (data) {
+	    console.log(data);
+	    socket.emit('IAMCONNECTING', { shalom: 'sup bro'});
+ 	});
+
+	// keyboard key pressed event
+	document.addEventListener('keydown', function(e) {
+		// check if this event's keypress is a valid command
+		if(e.keyCode in keys) {
+			// force 'on' state for this key
+	    	keys[e.keyCode] = 1;
+	    	// send this command to the server
+	    	// socket.emit(port, data) sends data through the specified port to the server
+	    	if (e.keyCode ==38)
+	    		socket.emit('38', {directionFromClient: '1'});
+	    	if (e.keyCode ==40)
+	    		socket.emit('40', {directionFromClient: '1'});
+	    	if (e.keyCode ==37)
+	    		socket.emit('37', {directionFromClient: '1'});
+	    	if (e.keyCode ==39)
+	    		socket.emit('39', {directionFromClient: '1'});
+
+		}
+	}, false);
+	// keyboard key released event
+	document.addEventListener('keyup', function(e) {
+		// check if this event's keypress is a valid command
+		if(e.keyCode in keys) {
+			// force 'off' state for this key
+	  		keys[e.keyCode] = 0;
+  			// send this command to the server
+	  		if (e.keyCode ==38)
+	    		socket.emit('38', {directionFromClient: '0'});
+	    	if (e.keyCode ==40)
+	    		socket.emit('40', {directionFromClient: '0'});
+	    	if (e.keyCode ==37)
+	    		socket.emit('37', {directionFromClient: '0'});
+	    	if (e.keyCode ==39)
+	    		socket.emit('39', {directionFromClient: '0'});
+
+		}
+	}, false);
+
+	//HANDLE RECEIVING from opponent
+
+	socket.on('38', function (data){
+		console.log("opponent says 38 (up) is " + data.directionFromClient);
+		opponentkeys[38] = data.directionFromClient;
+	});
+	socket.on('40', function (data){
+		console.log("opponent says 40 (down) is " + data.directionFromClient);
+		opponentkeys[40] = data.directionFromClient;
+	});
+	socket.on('37', function (data){
+		console.log("opponent says 37 (left) is " + data.directionFromClient);
+		opponentkeys[37] = data.directionFromClient;
+	});
+	socket.on('39', function (data){
+		console.log("opponent says 39 (right) is " + data.directionFromClient);
+		opponentkeys[39] = data.directionFromClient;
+	});
+
 	</script>
 	<body>
 </html>
