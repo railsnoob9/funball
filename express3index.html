@@ -122,6 +122,8 @@
 	var isoutside;
 	var isoutside2;
 	var iscollision;
+	var myColor; // color that this client has been assigned
+	var opponentColor;
 
 	// INPUT
 	var keys = { 
@@ -186,7 +188,16 @@
 	var socket = io.connect('http://localhost:8989');
 	// socket connection event
 	socket.on('HEROO', function (data) {
-	    console.log(data);
+	    console.log(data.hello);
+	    myColor = data.color;
+
+	    if (myColor == 'red')
+	    	opponentColor = 'blue';
+	    else if (myColor == 'blue')
+	    	opponentColor = 'red';
+	    else
+	    	console.log("ERROR FUCK WHAT THE FUCk");
+
 	    socket.emit('IAMCONNECTING', { shalom: 'sup bro'});
  	});
 
@@ -231,19 +242,19 @@
 	//HANDLE RECEIVING from opponent
 
 	socket.on('38', function (data){
-		console.log("opponent says 38 (up) is " + data.directionFromClient);
+		console.log(opponentColor + " says 38 (up) is " + data.directionFromClient);
 		opponentkeys[38] = data.directionFromClient;
 	});
 	socket.on('40', function (data){
-		console.log("opponent says 40 (down) is " + data.directionFromClient);
+		console.log(opponentColor + " says 40 (down) is " + data.directionFromClient);
 		opponentkeys[40] = data.directionFromClient;
 	});
 	socket.on('37', function (data){
-		console.log("opponent says 37 (left) is " + data.directionFromClient);
+		console.log(opponentColor + " says 37 (left) is " + data.directionFromClient);
 		opponentkeys[37] = data.directionFromClient;
 	});
 	socket.on('39', function (data){
-		console.log("opponent says 39 (right) is " + data.directionFromClient);
+		console.log(opponentColor + " says 39 (right) is " + data.directionFromClient);
 		opponentkeys[39] = data.directionFromClient;
 	});
 

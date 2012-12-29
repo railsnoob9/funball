@@ -71,9 +71,9 @@ exports.create = function(game) {
 	console.log("blue address is; " + game.players.blue.unique_address);
 	console.log("red address is; " + game.players.red.unique_address);
 
-	game.players.blue.socket.emit('HEROO', { hello: 'WELCOME TO FUNBALL, blue player',});
+	game.players.blue.socket.emit('HEROO', { hello: 'WELCOME TO FUNBALL, blue player', color: 'blue'});
 											//player: game.players.blue });
-	game.players.red.socket.emit('HEROO', { hello: 'WELCOME TO FUNBALL, red player',});
+	game.players.red.socket.emit('HEROO', { hello: 'WELCOME TO FUNBALL, red player', color: 'red'});
 											//player: game.players.red });
 
 	handleGameLoop(game);
