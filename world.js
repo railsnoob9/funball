@@ -79,25 +79,28 @@ exports.create = function(game) {
 };
 
 
-
+function async(arg, callback)
+{
+	callback(arg);
+}
 function handleGameLoop(game)
 {
-	//while (true)
-//	for (var i=0;i<10;i++)
-	//{
-		//update game space (i.e. make it smaller)
+	console.log("starting frame " + game.frame);
+	// GAME LOGIC
+	//update game space (i.e. make it smaller)
 	game.space.size.width = game.space.size.width -.05;
 	game.space.size.height = game.space.size.height -.05;	
-
-
+	
+	// PHYSICS
 	constrainSpeedAndPosition(game);
 	updatePlayerSpeedBasedOnInput(game);
 	handlePossibleCollision(game);
 	updatePlayerPositions(game);
 
-
+	// NETWORK
 	sendPositionsToClients(game);
 
+	// GAME LOGIC
 	//check if game is over
 	var isOutsideRed = outerCircleEdgeDetect(game, game.players.red.position.x,game.players.red.position.y);
 	var isOutsideBlue = outerCircleEdgeDetect(game, game.players.blue.position.x,game.players.blue.position.y);
@@ -110,8 +113,11 @@ function handleGameLoop(game)
 	}
 	else
 	{
-		//wait?
-		handleGameLoop(game);
+		//
+		async(game, function(game) {
+			game.frame = game.frame + 1;
+			return handleGameLoop(game);
+		});
 	}
 
 	//}
