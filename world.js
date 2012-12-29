@@ -4,41 +4,59 @@ exports.create = function(game) {
 
 	//just for reference { /*up*/38:0, /*down*/40:0, /*left*/37:0, /*right*/39:0 };
 
+	//this also sends the input back to the other client
+
 	//will show either 1 if keydown and 0 if keyup
 	//for blue
 	game.players.blue.socket.on('38', function (data){
 		console.log("blue says 38 (up) is " + data.directionFromClient);
 		game.players.blue.keys[38] = data.directionFromClient;
+
+		game.players.red.socket.emit('38', { directionFromClient: game.players.blue.keys[38]});
 	});
 	game.players.blue.socket.on('40', function (data){
 		console.log("blue says 40 (down) is " + data.directionFromClient);
 		game.players.blue.keys[40] = data.directionFromClient;
+
+		game.players.red.socket.emit('40', { directionFromClient: game.players.blue.keys[40]});
 	});
 	game.players.blue.socket.on('37', function (data){
 		console.log("blue says 37 (left) is " + data.directionFromClient);
 		game.players.blue.keys[37] = data.directionFromClient;
+
+		game.players.red.socket.emit('37', { directionFromClient: game.players.blue.keys[37]});
 	});
 	game.players.blue.socket.on('39', function (data){
 		console.log("blue says 39 (right) is " + data.directionFromClient);
 		game.players.blue.keys[39] = data.directionFromClient;
+
+		game.players.red.socket.emit('39', { directionFromClient: game.players.blue.keys[39]});
 	});
 
 	//for red
 	game.players.red.socket.on('38', function (data){
 		console.log("red says 38 (up) is " + data.directionFromClient);
 		game.players.red.keys[38] = data.directionFromClient;
+
+		game.players.blue.socket.emit('38', { directionFromClient: game.players.red.keys[38]});
 	});
 	game.players.red.socket.on('40', function (data){
 		console.log("red says 40 (down) is " + data.directionFromClient);
 		game.players.red.keys[40] = data.directionFromClient;
+
+		game.players.blue.socket.emit('40', { directionFromClient: game.players.red.keys[40]});
 	});
 	game.players.red.socket.on('37', function (data){
 		console.log("red says 37 (left) is " + data.directionFromClient);
 		game.players.red.keys[37] = data.directionFromClient;
+
+		game.players.blue.socket.emit('37', { directionFromClient: game.players.red.keys[37]});
 	});
 	game.players.red.socket.on('39', function (data){
 		console.log("red says 39 (right) is " + data.directionFromClient);
 		game.players.red.keys[39] = data.directionFromClient;
+
+		game.players.blue.socket.emit('39', { directionFromClient: game.players.red.keys[39]});
 	});
 
 
