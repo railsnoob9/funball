@@ -8,6 +8,10 @@ app.get('/', function (req, res) {
   res.sendfile(__dirname + '/express3index.html');
 });
 
+app.get('/processing.js', function (req, res) {
+  res.sendfile(__dirname + '/processing.js');
+});
+
 // suppresses heartbeat debug log
 // default is 3
 io.set('log', 0);
