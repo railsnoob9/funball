@@ -65,45 +65,50 @@ exports.create = function(game) {
 function handleGameLoop(game)
 {
 	//while (true)
-	for (var i=0;i<10;i++)
-	{
+//	for (var i=0;i<10;i++)
+	//{
 		//update game space (i.e. make it smaller)
-		game.space.size.width = game.space.size.width -.05;
-		game.space.size.height = game.space.size.height -.05;	
+	game.space.size.width = game.space.size.width -.05;
+	game.space.size.height = game.space.size.height -.05;	
 
 
-		constrainSpeedAndPosition(game);
-		updatePlayerSpeedBasedOnInput(game);
-		handlePossibleCollision(game);
-		updatePlayerPositions(game);
+	constrainSpeedAndPosition(game);
+	updatePlayerSpeedBasedOnInput(game);
+	handlePossibleCollision(game);
+	updatePlayerPositions(game);
 
 
-		sendPositionsToClients(game);
+	sendPositionsToClients(game);
 
-		//check if game is over
-		var isOutsideRed = outerCircleEdgeDetect(game, game.players.red.position.x,game.players.red.position.y);
-		var isOutsideBlue = outerCircleEdgeDetect(game, game.players.blue.position.x,game.players.blue.position.y);
+	//check if game is over
+	var isOutsideRed = outerCircleEdgeDetect(game, game.players.red.position.x,game.players.red.position.y);
+	var isOutsideBlue = outerCircleEdgeDetect(game, game.players.blue.position.x,game.players.blue.position.y);
 
-		//Round is over
-		if (checkIfRoundOver(game, isOutsideBlue,isOutsideRed)!=0)
-		{
-			//DO STUFF HERE()?
-			break;
-		}
-
+	//Round is over
+	if (checkIfRoundOver(game, isOutsideBlue,isOutsideRed)!=0)
+	{
+		//DO STUFF HERE()?
+		//break;
 	}
+	else
+	{
+		//wait?
+		handleGameLoop(game);
+	}
+
+	//}
 
 }
 
 function sendPositionsToClients(game)
 {
-		game.players.red.socket.emit('positions', { 
+		game.players.red.socket.volatile.emit('positions', { 
 			redxposition: game.players.red.position.x,
 			redyposition: game.players.red.position.y,
 			bluexposition: game.players.blue.position.x,
 			blueyposition: game.players.blue.position.y
 		});
-		game.players.blue.socket.emit('positions', { 
+		game.players.blue.socket.volatile.emit('positions', { 
 			redxposition: game.players.red.position.x,
 			redyposition: game.players.red.position.y,
 			bluexposition: game.players.blue.position.x,
