@@ -12,7 +12,7 @@
 
 
     <script>
-
+    // LOCAL SIMULATION
 	var sketch = new Processing.Sketch();
 	var sizeOfCanvasX = 800;
 	var sizeOfCanvasY = 600;
@@ -23,177 +23,177 @@
 	var globalMax = 100;
 	var globalMin = -100;
 
-var background = {
-	color: {
-		r: 155,
-		g: 155,
-		b: 155
-	},
-	size: {
-		x: 800,
-		y: 600
-	}
-};
-
-var player = {
-	tail: {
-		tailmx: new Array(),
-		tailmy: new Array()
-	},
-	position: {
-		x: 400,
-		y: 120
-	},
-	speed: {
-		acceleration: globalAccel,
-		//entropy: 0.005,
-		entropy:0,
-		max: globalMax,
-		min: globalMin,
-		current: {
-			x: 0,
-			y: 0
+	var background = {
+		color: {
+			r: 155,
+			g: 155,
+			b: 155
+		},
+		size: {
+			x: 800,
+			y: 600
 		}
-	},
-	size: {
-		x: 50,
-		y: 50,
-		mass: 1
-	},
-	color: {
-		r: 0,
-		g: 25,
-		b: 255
-	}
-};
-
-var player2 = {
-	tail: {
-		tailmx: new Array(),
-		tailmy: new Array()
-	},
-	position: {
-		x: 400,
-		y: 440
-	},
-	speed: {
-		acceleration: globalAccel,
-		//entropy: 0.005,
-		entropy:0,
-		max: globalMax,
-		min: globalMin,
-		current: {
-			x: 0,
-			y: 0
-		}
-	},
-	size: {
-		x: 50,
-		y: 50,
-		mass: 1
-	},
-	color: {
-		r: 255,
-		g: 25,
-		b: 0
-	}
-};
-
-var gamespace = {
-	position: {
-		x: sizeOfCanvasX/2,
-		y: sizeOfCanvasY/2
-	},
-	size:{
-		width: sizeOfCanvasX/1.6,
-		//height: sizeOfCanvasY/1.1
-		height:sizeOfCanvasX/1.6
-	},
-	gamespaceBackgroundRandom: 0,
-	colorIfSolid:{
-		r: 40,
-		g: 40,
-		b: 50
-	}
-};
-
-var isoutside;
-var isoutside2;
-var iscollision;
-
-
-
-
-var keys = { /*up*/38:0, /*down*/40:0, /*left*/37:0, /*right*/39:0 };
-  document.addEventListener('keydown', function(e) {
-    if(e.keyCode in keys) {
-      keys[e.keyCode] = 1;
-    }
-  }, false);
-
-  document.addEventListener('keyup', function(e) {
-    if(e.keyCode in keys) {
-      keys[e.keyCode] = 0;
-    }
-  }, false);
-
-
-
-sketch.attachFunction = function(processing) {
-	// happens when page loads
-	processing.setup = function() {
-		processing.size(sizeOfCanvasX, sizeOfCanvasY);
-		processing.background(background.color.r,background.color.g,background.color.b);	
-		processing.frameRate(frameRate);  
 	};
-	// happens every frame
-	processing.draw = function() {
 
+	var player = {
+		tail: {
+			tailmx: new Array(),
+			tailmy: new Array()
+		},
+		position: {
+			x: 400,
+			y: 120
+		},
+		speed: {
+			acceleration: globalAccel,
+			//entropy: 0.005,
+			entropy:0,
+			max: globalMax,
+			min: globalMin,
+			current: {
+				x: 0,
+				y: 0
+			}
+		},
+		size: {
+			x: 50,
+			y: 50,
+			mass: 1
+		},
+		color: {
+			r: 0,
+			g: 25,
+			b: 255
+		}
+	};
 
+	var player2 = {
+		tail: {
+			tailmx: new Array(),
+			tailmy: new Array()
+		},
+		position: {
+			x: 400,
+			y: 440
+		},
+		speed: {
+			acceleration: globalAccel,
+			//entropy: 0.005,
+			entropy:0,
+			max: globalMax,
+			min: globalMin,
+			current: {
+				x: 0,
+				y: 0
+			}
+		},
+		size: {
+			x: 50,
+			y: 50,
+			mass: 1
+		},
+		color: {
+			r: 255,
+			g: 25,
+			b: 0
+		}
+	};
 
-		
+	var gamespace = {
+		position: {
+			x: sizeOfCanvasX/2,
+			y: sizeOfCanvasY/2
+		},
+		size:{
+			width: sizeOfCanvasX/1.6,
+			//height: sizeOfCanvasY/1.1
+			height:sizeOfCanvasX/1.6
+		},
+		gamespaceBackgroundRandom: 0,
+		colorIfSolid:{
+			r: 40,
+			g: 40,
+			b: 50
+		}
+	};
 
-			};  
-};
+	var isoutside;
+	var isoutside2;
+	var iscollision;
+
+	// INPUT
+	var keys = { 
+		38:0, /*up*/
+		40:0, /*down*/
+		37:0, /*left*/
+		39:0  /*right*/
+	};
+	// keyboard key pressed event
+	document.addEventListener('keydown', function(e) {
+		// check if this event's keypress is a valid command
+		if(e.keyCode in keys) {
+			// force 'on' state for this key
+	  		keys[e.keyCode] = 1;
+		}
+	}, false);
+
+	document.addEventListener('keyup', function(e) {
+		// check if this event's keypress is a valid command
+		if(e.keyCode in keys) {
+			// force 'off' state for this key
+			keys[e.keyCode] = 0;
+		}
+	}, false);
+
+	// RENDERING
+	// processing.js core/main function
+	sketch.attachFunction = function(processing) {
+		// happens when page loads
+		processing.setup = function() {
+			processing.size(sizeOfCanvasX, sizeOfCanvasY);
+			processing.background(background.color.r,background.color.g,background.color.b);	
+			processing.frameRate(frameRate);  
+		};
+		// happens every frame
+		processing.draw = function() {
+			// todo
+		};  
+	};
+		  
+	var canvas = document.getElementById("world");
+	// attaching the sketch to the canvas
+	var p = new Processing(canvas, sketch);
 	  
-var canvas = document.getElementById("world");
-// attaching the sketch to the canvas
-var p = new Processing(canvas, sketch);
-  
-function draw() {
-    window.requestAnimationFrame(draw);
-}
-
+	function draw() {
+	    window.requestAnimationFrame(draw);
+	}
     </script>
-
-
-
-
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 	<script src="socket.io/socket.io.js"></script>
 	<script>
+		// REMOTE SIMULATION
 		var socket = io.connect('http://localhost:8989');
+		// socket connection event
 		socket.on('HEROO', function (data) {
 		    console.log(data);
-		    socket.emit('IAMCONNECTING', { shalom: 'shalom'});
-	 	 });
-
-		// $("#button").click(function(){
-		//     socket.emit('clientMessage', 
-		// 		{ 
-		// 			directionFromClient: 'HEY YOU, I MOVED LEFT -client', 
-		// 			aclientnother: "THIS IS ANOTHER TING FROM TE VCLIENT" 
-		// 		}
-		// 	);
-
-	 //  	});
-
-		var keys = { /*up*/38:0, /*down*/40:0, /*left*/37:0, /*right*/39:0 };
+		    socket.emit('IAMCONNECTING', { shalom: 'sup bro'});
+	 	});
+		// INPUT
+		var keys = { 
+			38:0, /*up*/
+			40:0, /*down*/
+			37:0, /*left*/
+			39:0  /*right*/
+		};
+		// keyboard key pressed event
 		document.addEventListener('keydown', function(e) {
+			// check if this event's keypress is a valid command
 			if(e.keyCode in keys) {
+				// force 'on' state for this key
 		    	keys[e.keyCode] = 1;
-
+		    	// send this command to the server
+		    	// socket.emit(port, data) sends data through the specified port to the server
 		    	if (e.keyCode ==38)
 		    		socket.emit('38', {directionFromClient: '1'});
 		    	if (e.keyCode ==40)
@@ -213,11 +213,13 @@ function draw() {
 		    	// 	socket.emit('clientMessage', {directionFromClient: 'keydown_right'});
 			}
 		}, false);
-
+		// keyboard key released event
 		document.addEventListener('keyup', function(e) {
+			// check if this event's keypress is a valid command
 			if(e.keyCode in keys) {
+				// force 'off' state for this key
 		  		keys[e.keyCode] = 0;
-
+	  			// send this command to the server
 		  		if (e.keyCode ==38)
 		    		socket.emit('38', {directionFromClient: '0'});
 		    	if (e.keyCode ==40)
