@@ -28,13 +28,13 @@ var globalMin = -100;
 
 
 var game = {
-
+  frame: 0,
   //not really necessary, but may be useful
   background: {
   	size: {
-		x: 800,
-		y: 600
-	}
+  		x: 800,
+  		y: 600
+  	}
   },
   space: {
     size: {
