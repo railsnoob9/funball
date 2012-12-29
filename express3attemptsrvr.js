@@ -51,15 +51,6 @@ var game = {
     }
   },
   players: { 
-    sendMessage: function(player, callback)  {
-      if (player == 'red') {
-        callback(players[this.red.socket]);
-      } else (player == 'blue') {
-        callback(players[this.blue.socket]);
-      } else {
-        callback(players[player.socket]);
-      }
-    },
     red: {
       keys: { /*up*/38:0, /*down*/40:0, /*left*/37:0, /*right*/39:0 },
       unique_address: '0.0.0.0:0000',
@@ -139,7 +130,7 @@ anything = function (socket) {
               socket: socket    
           };
           game.players.red.unique_address = unique_address;
-          game.players.red.socket = players.length;
+          game.players.red.socket = socket;
         }
         else if (players.length ==1)
         {
@@ -147,7 +138,7 @@ anything = function (socket) {
               socket: socket    
           };
           game.players.blue.unique_address = unique_address;
-          game.players.blue.socket = players.length;
+          game.players.blue.socket = socket;
         }
     }
     else

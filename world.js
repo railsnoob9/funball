@@ -118,8 +118,8 @@ function handleGameLoop(game)
 		//
 		async(game, function(game) {
 			var now = new Date();
-			game.frame = game.frame.count + 1;
-			game.frame.delta = now - game.frame.last;
+			game.frame.count = game.frame.count + 1;
+			//game.frame.delta = now - game.frame.last;
 			game.frame.last = now;
 			return handleGameLoop(game);
 		});
