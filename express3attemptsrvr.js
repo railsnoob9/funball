@@ -28,7 +28,11 @@ var globalMin = -100;
 
 
 var game = {
-  frame: 0,
+  frame: {
+    count: 0,
+    last: new Date(),
+    delta: 0  // ms
+  },
   //not really necessary, but may be useful
   background: {
   	size: {
@@ -46,7 +50,16 @@ var game = {
 		y: sizeOfCanvasY/2
     }
   },
-  players: {   
+  players: { 
+    sendMessage: function(player, callback)  {
+      if (player == 'red') {
+        callback(players[this.red.socket]);
+      } else (player == 'blue') {
+        callback(players[this.blue.socket]);
+      } else {
+        callback(players[player.socket]);
+      }
+    },
     red: {
       keys: { /*up*/38:0, /*down*/40:0, /*left*/37:0, /*right*/39:0 },
       unique_address: '0.0.0.0:0000',
@@ -55,22 +68,22 @@ var game = {
         x: 400,
         y: 120
       },
-	  speed: {
-		acceleration: globalAccel,
-		//entropy: 0.005,
-		entropy:0,
-		max: globalMax,
-		min: globalMin,
-		current: {
-			x: 0,
-			y: 0
-		}
-	},
-	  size: {
-		x: 50,
-		y: 50,
-		mass: 1
-	  },
+  	  speed: {
+    		acceleration: globalAccel,
+    		//entropy: 0.005,
+    		entropy:0,
+    		max: globalMax,
+    		min: globalMin,
+    		current: {
+    			x: 0,
+    			y: 0
+    		}
+	    },
+  	  size: {
+    		x: 50,
+    		y: 50,
+    		mass: 1
+	    },
       // past moves
       moves: []
     },
@@ -79,25 +92,25 @@ var game = {
       unique_address: '0.0.0.0:0000',
       socket: 0,
       position: {
-       x: 400,
-       y: 440
+        x: 400,
+        y: 440
       },
-	  speed: {
-		acceleration: globalAccel,
-		//entropy: 0.005,
-		entropy:0,
-		max: globalMax,
-		min: globalMin,
-		current: {
-			x: 0,
-			y: 0
-		}
-	},      
+      speed: {
+		    acceleration: globalAccel,
+		    //entropy: 0.005,
+		    entropy:0,
+		    max: globalMax,
+		    min: globalMin,
+		    current: {
+			   x: 0,
+			   y: 0
+		    }
+	    },      
       size: {
-		x: 50,
-		y: 50,
-		mass: 1
-	  },
+    		x: 50,
+    		y: 50,
+    		mass: 1
+  	  },
       moves: []
     }
   }
@@ -126,7 +139,7 @@ anything = function (socket) {
               socket: socket    
           };
           game.players.red.unique_address = unique_address;
-          game.players.red.socket = socket;
+          game.players.red.socket = players.length;
         }
         else if (players.length ==1)
         {
@@ -134,7 +147,7 @@ anything = function (socket) {
               socket: socket    
           };
           game.players.blue.unique_address = unique_address;
-          game.players.blue.socket = socket;
+          game.players.blue.socket = players.length;
         }
     }
     else

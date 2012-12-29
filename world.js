@@ -87,7 +87,7 @@ function async(arg, callback)
 }
 function handleGameLoop(game)
 {
-	console.log("starting frame " + game.frame);
+	console.log("starting frame " + game.frame.count);
 	// GAME LOGIC
 	//update game space (i.e. make it smaller)
 	game.space.size.width = game.space.size.width -.05;
@@ -117,7 +117,10 @@ function handleGameLoop(game)
 	{
 		//
 		async(game, function(game) {
-			game.frame = game.frame + 1;
+			var now = new Date();
+			game.frame = game.frame.count + 1;
+			game.frame.delta = now - game.frame.last;
+			game.frame.last = now;
 			return handleGameLoop(game);
 		});
 	}
