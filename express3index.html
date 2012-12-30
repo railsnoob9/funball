@@ -170,6 +170,7 @@
 				// get ready...
 				frame.count = frame.count + 1;
 				frame.last = new Date();
+				processing.frameRate(frame.fps.target);				
 			}
 			else
 			{
@@ -470,7 +471,7 @@
 	}
 
 	reconcile = function(data) {
-		
+		console.log("frame mismatch!");
 	};
 
 
@@ -483,38 +484,46 @@
 		if (myColor =='blue')
 		{
 			socket.on('38', function (data){
-				console.log(opponentColor + " says 38 (up) is " + data.directionFromClient);
+				console.log(opponentColor + " says 38 (up) is " + data.directionFromClient + " frame " + data.frame.count + " vs " + frame.count);
+				if (data.frame.count != frame.count) { reconcile(data); }
 				redkeys[38] = data.directionFromClient;
 			});
 			socket.on('40', function (data){
-				console.log(opponentColor + " says 40 (down) is " + data.directionFromClient);
+				console.log(opponentColor + " says 40 (down) is " + data.directionFromClient + " frame " + data.frame.count + " vs " + frame.count);
+				if (data.frame.count != frame.count) { reconcile(data); }
 				redkeys[40] = data.directionFromClient;
 			});
 			socket.on('37', function (data){
-				console.log(opponentColor + " says 37 (left) is " + data.directionFromClient);
+				console.log(opponentColor + " says 37 (left) is " + data.directionFromClient + " frame " + data.frame.count + " vs " + frame.count);
+				if (data.frame.count != frame.count) { reconcile(data); }
 				redkeys[37] = data.directionFromClient;
 			});
 			socket.on('39', function (data){
-				console.log(opponentColor + " says 39 (right) is " + data.directionFromClient);
+				console.log(opponentColor + " says 39 (right) is " + data.directionFromClient + " frame " + data.frame.count + " vs " + frame.count);
+				if (data.frame.count != frame.count) { reconcile(data); }
 				redkeys[39] = data.directionFromClient;
 			});
 		}
 		else if (myColor =='red')
 		{
 			socket.on('38', function (data){
-				console.log(opponentColor + " says 38 (up) is " + data.directionFromClient);
+				console.log(opponentColor + " says 38 (up) is " + data.directionFromClient + " frame " + data.frame.count + " vs " + frame.count);
+				if (data.frame.count != frame.count) { reconcile(data); }
 				bluekeys[38] = data.directionFromClient;
 			});
 			socket.on('40', function (data){
-				console.log(opponentColor + " says 40 (down) is " + data.directionFromClient);
+				console.log(opponentColor + " says 40 (down) is " + data.directionFromClient + " frame " + data.frame.count + " vs " + frame.count);
+				if (data.frame.count != frame.count) { reconcile(data); }
 				bluekeys[40] = data.directionFromClient;
 			});
 			socket.on('37', function (data){
-				console.log(opponentColor + " says 37 (left) is " + data.directionFromClient);
+				console.log(opponentColor + " says 37 (left) is " + data.directionFromClient + " frame " + data.frame.count + " vs " + frame.count);
+				if (data.frame.count != frame.count) { reconcile(data); }
 				bluekeys[37] = data.directionFromClient;
 			});
 			socket.on('39', function (data){
-				console.log(opponentColor + " says 39 (right) is " + data.directionFromClient);
+				console.log(opponentColor + " says 39 (right) is " + data.directionFromClient + " frame " + data.frame.count + " vs " + frame.count);
+				if (data.frame.count != frame.count) { reconcile(data); }
 				bluekeys[39] = data.directionFromClient;
 			});
 		}
