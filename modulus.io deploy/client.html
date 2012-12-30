@@ -1,0 +1,671 @@
+<html>
+	<head>
+   		 <script language="javascript" src="processing.js"></script>
+
+	</head>
+	<body>
+	<div>
+		<center>
+			<canvas id ="world"></canvas>
+		</center>
+    </div> 
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script src="socket.io/socket.io.js"></script>
+	<script>
+    // LOCAL SIMULATION
+	var sketch = new Processing.Sketch();
+	var sizeOfCanvasX = 800;
+	var sizeOfCanvasY = 600;
+	var frameRate = 240;
+
+	var globalAccel = .0173;
+	//var globalAccel = 10;
+	var globalMax = 100;
+	var globalMin = -100;
+
+	var frame;	// used to hold latest simulation step data
+
+	var background = {
+		color: {
+			r: 155,
+			g: 155,
+			b: 155
+		},
+		size: {
+			x: 800,
+			y: 600
+		}
+	};
+
+	var blue = {
+		tail: {
+			tailmx: new Array(),
+			tailmy: new Array()
+		},
+		position: {
+			x: 400,
+			y: 120
+		},
+		speed: {
+			acceleration: globalAccel,
+			//entropy: 0.005,
+			entropy:0,
+			max: globalMax,
+			min: globalMin,
+			current: {
+				x: 0,
+				y: 0
+			}
+		},
+		size: {
+			x: 50,
+			y: 50,
+			mass: 1
+		},
+		color: {
+			r: 0,
+			g: 25,
+			b: 255
+		}
+	};
+
+	var red = {
+		tail: {
+			tailmx: new Array(),
+			tailmy: new Array()
+		},
+		position: {
+			x: 400,
+			y: 440
+		},
+		speed: {
+			acceleration: globalAccel,
+			//entropy: 0.005,
+			entropy:0,
+			max: globalMax,
+			min: globalMin,
+			current: {
+				x: 0,
+				y: 0
+			}
+		},
+		size: {
+			x: 50,
+			y: 50,
+			mass: 1
+		},
+		color: {
+			r: 255,
+			g: 25,
+			b: 0
+		}
+	};
+
+	var gamespace = {
+		position: {
+			x: sizeOfCanvasX/2,
+			y: sizeOfCanvasY/2
+		},
+		size:{
+			width: sizeOfCanvasX/1.6,
+			//height: sizeOfCanvasY/1.1
+			height:sizeOfCanvasX/1.6
+		},
+		gamespaceBackgroundRandom: 0,
+		colorIfSolid:{
+			r: 40,
+			g: 40,
+			b: 50
+		}
+	};
+
+	var isoutside;
+	var isoutside2;
+	var iscollision;
+	var myColor=0; // color that this client has been assigned
+	var opponentColor=0;
+
+	// INPUT
+	var bluekeys = { 
+		38:0, /*up*/
+		40:0, /*down*/
+		37:0, /*left*/
+		39:0  /*right*/
+	};
+	var redkeys = { 
+		38:0, /*up*/
+		40:0, /*down*/
+		37:0, /*left*/
+		39:0  /*right*/
+	};
+
+	// RENDERING
+	// processing.js core/main function
+	sketch.attachFunction = function(processing) {
+
+
+
+		// happens when page loads
+		processing.setup = function() {
+			processing.size(sizeOfCanvasX, sizeOfCanvasY);
+			processing.background(background.color.r,background.color.g,background.color.b);	
+			processing.frameRate(frameRate);  
+		};
+			// happens every frame
+		processing.draw = function() {
+
+		if (myColor ==0)
+		{
+			//do nothing until they both connect
+			processing.textSize(30);
+			processing.fill(255,255,255);
+			processing.text("Waiting for other player to connect", sizeOfCanvasX/2-100, 200,550,550);
+		}
+		else
+		{
+			if (frame.count == 0)
+			{
+				// get ready...
+				frame.count = frame.count + 1;
+				frame.last = new Date();
+				processing.frameRate(frame.fps.target);				
+			}
+			else
+			{
+				// GO!
+				var now = new Date();
+				frame.count = frame.count + 1;
+				frame.last = now;
+
+					// set fill color allows us to on the fly determine if we want a random background or not
+				if (gamespace.gamespaceBackgroundRandom == 1)
+				{
+					processing.fill(processing.random(255),processing.sin(processing.noise()),50);
+				}
+				else
+				{
+					processing.fill(gamespace.colorIfSolid.r,gamespace.colorIfSolid.g,gamespace.colorIfSolid.b);
+				}
+				
+				// draw an ellipse--outer (gamespace)	
+				//make it get a bit smaller each frame	
+				gamespace.size.width = gamespace.size.width-.05;
+				gamespace.size.height = gamespace.size.height-.05;		
+				processing.ellipse(gamespace.position.x,gamespace.position.y,gamespace.size.width,gamespace.size.height);
+				
+				// set stroke color
+				processing.stroke(background.color.r,background.color.g,background.color.b);
+				//processing.noStroke();
+				// set fill color
+				processing.fill(blue.color.r,blue.color.g,blue.color.b);
+				// check keyboard input
+				if (
+					bluekeys[37] == 1 ||
+					bluekeys[38] == 1 ||
+					bluekeys[39] == 1 ||
+					bluekeys[40] == 1
+					)
+				{
+					// set the fill color to background color (shadow effect)
+					processing.fill(background.color.r,background.color.g,background.color.b);
+					// draw an ellipse (blue starting point)
+					processing.ellipse(blue.position.x,blue.position.y,blue.size.x,blue.size.y);	
+					
+					// update speed of blue
+					if (bluekeys[37]==1)
+					{
+						blue.speed.current.x = blue.speed.current.x - blue.speed.acceleration;
+					}
+					if (bluekeys[38]==1)
+					{
+						//ellipsey = ellipsey - speedacceleration;
+						blue.speed.current.y = blue.speed.current.y - blue.speed.acceleration;				
+					}
+					if (bluekeys[39]==1)
+					{
+						//ellipsex = ellipsex + speedacceleration;
+						blue.speed.current.x = blue.speed.current.x + blue.speed.acceleration;
+					}
+					if (bluekeys[40]==1)
+					{
+						//ellipsey = ellipsey + speedacceleration;
+						blue.speed.current.y = blue.speed.current.y + blue.speed.acceleration;					
+					}
+
+				}
+
+				//red
+				if (
+					redkeys[37] == 1 ||
+					redkeys[38] == 1 ||
+					redkeys[39] == 1 ||
+					redkeys[40] == 1
+					)
+				{
+					// set the fill color to background color (shadow effect)
+					//processing.fill(background.color.r,background.color.g,background.color.b);
+					// draw an ellipse (blue starting point)
+					//processing.ellipse(red.position.x,red.position.y,red.size.x,red.size.y);	
+					
+					// update speed of red
+					if (redkeys[37]==1)
+					{
+						red.speed.current.x = red.speed.current.x - red.speed.acceleration;
+					}
+					if (redkeys[38]==1)
+					{
+						//ellipsey = ellipsey - speedacceleration;
+						red.speed.current.y = red.speed.current.y - red.speed.acceleration;				
+					}
+					if (redkeys[39]==1)
+					{
+						//ellipsex = ellipsex + speedacceleration;
+						red.speed.current.x = red.speed.current.x + red.speed.acceleration;
+					}
+					if (redkeys[40]==1)
+					{
+						//ellipsey = ellipsey + speedacceleration;
+						red.speed.current.y = red.speed.current.y + red.speed.acceleration;					
+					}
+
+				}
+				// apply entropy/friction
+				if (blue.speed.current.x > 0) {
+					blue.speed.current.x = blue.speed.current.x - blue.speed.entropy;
+				} else if (blue.speed.current.x < 0) {
+					blue.speed.current.x = blue.speed.current.x + blue.speed.entropy;
+				}
+				if (blue.speed.current.y > 0) {
+					blue.speed.current.y = blue.speed.current.y - blue.speed.entropy;
+				} else if (blue.speed.current.y < 0) {
+					blue.speed.current.y = blue.speed.current.y + blue.speed.entropy;
+				}
+				
+				// constrain speed
+				if (blue.speed.current.y > blue.speed.max) { blue.speed.current.y = blue.speed.max; }
+				if (blue.speed.current.x > blue.speed.max) { blue.speed.current.x = blue.speed.max; }
+				if (blue.speed.current.y < blue.speed.min) { blue.speed.current.y = blue.speed.min; }
+				if (blue.speed.current.x < blue.speed.min) { blue.speed.current.x = blue.speed.min; }	
+
+				//red
+				if (red.speed.current.y > red.speed.max) { red.speed.current.y = red.speed.max; }
+				if (red.speed.current.x > red.speed.max) { red.speed.current.x = red.speed.max; }
+				if (red.speed.current.y < red.speed.min) { red.speed.current.y = red.speed.min; }
+				if (red.speed.current.x < red.speed.min) { red.speed.current.x = red.speed.min; }	
+				// contrain position
+				if (blue.position.x < 0) { blue.speed.current.x = -blue.speed.current.x; }
+				if (blue.position.y < 0) { blue.speed.current.y = -blue.speed.current.y; }
+				if (blue.position.x > background.size.x) { blue.speed.current.x = -blue.speed.current.x; }
+				if (blue.position.y > background.size.y) { blue.speed.current.y = -blue.speed.current.y; }
+				//red
+				if (red.position.x < 0) { red.speed.current.x = -red.speed.current.x; }
+				if (red.position.y < 0) { red.speed.current.y = -red.speed.current.y; }
+				if (red.position.x > background.size.x) { red.speed.current.x = -red.speed.current.x; }
+				if (red.position.y > background.size.y) { red.speed.current.y = -red.speed.current.y; }
+
+				handleCollision();
+
+				function handleCollision()
+				{
+					//check if players collided
+					iscollision = playerEdgeDetect();
+
+					if (iscollision ==1)
+					{
+						//2d elastic collision
+						var distancex = blue.position.x - red.position.x;
+						var distancey = blue.position.y - red.position.y;
+
+						var collisionision_angle = processing.atan2(distancey, distancex);
+
+
+						var magnitude_1 = processing.sqrt(blue.speed.current.x*blue.speed.current.x+blue.speed.current.y*blue.speed.current.y);
+						var magnitude_2 = processing.sqrt(red.speed.current.x*red.speed.current.x+red.speed.current.y*red.speed.current.y);
+						var direction_1 = processing.atan2(blue.speed.current.y, blue.speed.current.x);
+						var direction_2 = processing.atan2(red.speed.current.y, red.speed.current.x);
+
+						var new_xspeed_1 = magnitude_1*processing.cos(direction_1-collisionision_angle);
+						var new_yspeed_1 = magnitude_1*processing.sin(direction_1-collisionision_angle);
+						var new_xspeed_2 = magnitude_2*processing.cos(direction_2-collisionision_angle);
+						var new_yspeed_2 = magnitude_2*processing.sin(direction_2-collisionision_angle);
+
+
+						var final_xspeed_1 = ((blue.size.mass-red.size.mass)*new_xspeed_1+(red.size.mass+red.size.mass)*new_xspeed_2)/
+							(blue.size.mass+red.size.mass);
+						var final_xspeed_2 = ((blue.size.mass+blue.size.mass)*new_xspeed_1+(blue.size.mass-red.size.mass)*new_xspeed_2)/
+							(blue.size.mass+red.size.mass);
+						var final_yspeed_1 = new_yspeed_1;
+						var final_yspeed_2 = new_yspeed_2;
+
+						blue.speed.current.x = processing.cos(collisionision_angle)*final_xspeed_1+processing.cos(collisionision_angle+processing.PI/2)*final_yspeed_1;
+						blue.speed.current.y = processing.sin(collisionision_angle)*final_xspeed_1+processing.sin(collisionision_angle+processing.PI/2)*final_yspeed_1;
+						red.speed.current.x = processing.cos(collisionision_angle)*final_xspeed_2+processing.cos(collisionision_angle+processing.PI/2)*final_yspeed_2;
+						red.speed.current.y = processing.sin(collisionision_angle)*final_xspeed_2+processing.sin(collisionision_angle+processing.PI/2)*final_yspeed_2;
+					}
+				}
+
+
+				// update position of blue
+				blue.position.x = blue.position.x + blue.speed.current.x;	
+				blue.position.y = blue.position.y + blue.speed.current.y;	
+
+				red.position.x = red.position.x + red.speed.current.x;	
+				red.position.y = red.position.y + red.speed.current.y;				
+			
+				// define local scope function
+				function outerCircleEdgeDetect(x, y)
+				{
+					var distancex = x - gamespace.position.x;
+					var distancey = y - gamespace.position.y;
+					
+					var totaldistance = processing.sqrt(distancex*distancex + distancey*distancey);
+					
+					//we know it's a circle, so can just use radius
+					var radius = gamespace.size.width/2;
+					
+					if (totaldistance > radius)
+						return 1;
+					else
+						return 0;
+				};	
+
+				// define local scope function
+				//way too simple right now
+				function playerEdgeDetect()
+				{
+					var distancex = blue.position.x - red.position.x;
+					var distancey = blue.position.y - red.position.y;
+					
+					var totaldistance = processing.sqrt(distancex*distancex + distancey*distancey);
+					
+					//we know it's a circle, so can just use radius
+					//this also assumes that the two blues are the same size 
+					var radius = blue.size.x;
+					
+					if (totaldistance <= radius)
+						return 1;
+					else
+						return 0;
+				};	
+
+
+				//tail stuff
+
+			    // Reads throught the entire array
+			    // and shifts the values to the left
+			    for(var i=1; i<blue.size.x; i++) {
+					blue.tail.tailmx[i-1] = blue.tail.tailmx[i];
+			 		blue.tail.tailmy[i-1] = blue.tail.tailmy[i];
+			    } 
+			    for(var i=1; i<red.size.x; i++) {
+					red.tail.tailmx[i-1] = red.tail.tailmx[i];
+			 		red.tail.tailmy[i-1] = red.tail.tailmy[i];
+			    } 
+
+			    blue.tail.tailmx[blue.size.x-1] = blue.position.x;
+		  		blue.tail.tailmy[blue.size.x-1] = blue.position.y;
+		  		red.tail.tailmx[red.size.x-1] = red.position.x;
+		  		red.tail.tailmy[red.size.x-1] = red.position.y;
+
+								
+				// set the fill color (blue color)
+				processing.fill(blue.color.r,blue.color.g,blue.color.b);
+				// draw the blue ellipse
+
+			//	var blueColor= processing.color(blue.color.r,blue.color.g,blue.color.b);
+
+			//	processing.fill(blueColor,15);
+				//draw tails
+				for(var i=0; i<blue.size.x; i++) {
+		    		processing.ellipse(blue.tail.tailmx[i], blue.tail.tailmy[i], i, i);
+		  		}
+				
+				// set the fill color (red color)
+				processing.fill(red.color.r,red.color.g,red.color.b);
+				// draw the blue ellipse
+				processing.ellipse(red.position.x,red.position.y,red.size.x,red.size.y);
+
+				for(var i=0; i<red.size.x; i++) {
+		    		processing.ellipse(red.tail.tailmx[i], red.tail.tailmy[i], i, i);
+		  		}
+		  
+				isoutside = outerCircleEdgeDetect(blue.position.x, blue.position.y);
+				isoutside2 = outerCircleEdgeDetect(red.position.x, red.position.y);
+
+				//end of game texts
+		  		if (isoutside ==1 && isoutside2 ==0)
+				{
+					processing.textSize(40);
+					processing.fill(255,255,255);
+					processing.text("Red Wins", sizeOfCanvasX/2-100, 200,550,550);
+					isGameOver = 1;
+				}
+				if (isoutside ==0 && isoutside2 ==1)
+				{
+					processing.textSize(40);
+					processing.fill(255,255,255);
+					processing.text("Blue Wins", sizeOfCanvasX/2-100, 200,550,550);
+					isGameOver = 1;
+				}
+				if (isoutside ==1 && isoutside2 ==1)
+				{
+					processing.textSize(40);
+					processing.fill(255,255,255);
+					processing.text("Draw", sizeOfCanvasX/2-100, 200,550,550);
+					isGameOver = 1;
+				}
+			}
+		}
+						
+		};  
+	};
+		  
+	var canvas = document.getElementById("world");
+	// attaching the sketch to the canvas
+	var p = new Processing(canvas, sketch);
+	  
+	function draw() {
+	    window.requestAnimationFrame(draw);
+	}
+
+	reconcile = function(data) {
+		console.log("frame mismatch!");
+	};
+
+
+	var lastkey=-1;
+	var lastvalue=-1;
+	addEventListeners = function()
+	{
+
+		//HANDLE RECEIVING from opponent
+		if (myColor =='blue')
+		{
+			socket.on('38', function (data){
+				console.log(opponentColor + " says 38 (up) is " + data.directionFromClient + " frame " + data.frame.count + " vs " + frame.count);
+				if (data.frame.count != frame.count) { reconcile(data); }
+				redkeys[38] = data.directionFromClient;
+			});
+			socket.on('40', function (data){
+				console.log(opponentColor + " says 40 (down) is " + data.directionFromClient + " frame " + data.frame.count + " vs " + frame.count);
+				if (data.frame.count != frame.count) { reconcile(data); }
+				redkeys[40] = data.directionFromClient;
+			});
+			socket.on('37', function (data){
+				console.log(opponentColor + " says 37 (left) is " + data.directionFromClient + " frame " + data.frame.count + " vs " + frame.count);
+				if (data.frame.count != frame.count) { reconcile(data); }
+				redkeys[37] = data.directionFromClient;
+			});
+			socket.on('39', function (data){
+				console.log(opponentColor + " says 39 (right) is " + data.directionFromClient + " frame " + data.frame.count + " vs " + frame.count);
+				if (data.frame.count != frame.count) { reconcile(data); }
+				redkeys[39] = data.directionFromClient;
+			});
+		}
+		else if (myColor =='red')
+		{
+			socket.on('38', function (data){
+				console.log(opponentColor + " says 38 (up) is " + data.directionFromClient + " frame " + data.frame.count + " vs " + frame.count);
+				if (data.frame.count != frame.count) { reconcile(data); }
+				bluekeys[38] = data.directionFromClient;
+			});
+			socket.on('40', function (data){
+				console.log(opponentColor + " says 40 (down) is " + data.directionFromClient + " frame " + data.frame.count + " vs " + frame.count);
+				if (data.frame.count != frame.count) { reconcile(data); }
+				bluekeys[40] = data.directionFromClient;
+			});
+			socket.on('37', function (data){
+				console.log(opponentColor + " says 37 (left) is " + data.directionFromClient + " frame " + data.frame.count + " vs " + frame.count);
+				if (data.frame.count != frame.count) { reconcile(data); }
+				bluekeys[37] = data.directionFromClient;
+			});
+			socket.on('39', function (data){
+				console.log(opponentColor + " says 39 (right) is " + data.directionFromClient + " frame " + data.frame.count + " vs " + frame.count);
+				if (data.frame.count != frame.count) { reconcile(data); }
+				bluekeys[39] = data.directionFromClient;
+			});
+		}
+
+
+		//handle internal keyboard events
+		if (myColor =='blue')
+		{
+
+			// keyboard key pressed event
+			document.addEventListener('keydown', function(e) {
+				// check if this event's keypress is a valid command
+				if(e.keyCode in bluekeys) {
+					// force 'on' state for this key
+			  		bluekeys[e.keyCode] = 1;
+				}
+			}, false);
+
+			document.addEventListener('keyup', function(e) {
+				// check if this event's keypress is a valid command
+				if(e.keyCode in bluekeys) {
+					// force 'off' state for this key
+					bluekeys[e.keyCode] = 0;
+				}
+			}, false);
+		}
+		else if (myColor =='red')
+		{
+			// keyboard key pressed event
+			document.addEventListener('keydown', function(e) {
+				// check if this event's keypress is a valid command
+				if(e.keyCode in bluekeys) {
+					// force 'on' state for this key
+			  		redkeys[e.keyCode] = 1;
+				}
+			}, false);
+
+			document.addEventListener('keyup', function(e) {
+				// check if this event's keypress is a valid command
+				if(e.keyCode in bluekeys) {
+					// force 'off' state for this key
+					redkeys[e.keyCode] = 0;
+				}
+			}, false);
+		}
+
+		// keyboard key pressed event
+		document.addEventListener('keydown', function(e) {
+			// check if this event's keypress is a valid command
+			if(e.keyCode in bluekeys) {
+				// force 'on' state for this key
+		    	//bluekeys[e.keyCode] = 1;
+		    	// send this command to the server
+		    	// socket.emit(port, data) sends data through the specified port to the server
+		    	if (e.keyCode ==38)
+		    	{
+		    		if (lastkey!=38 || lastvalue !=1)
+		    			socket.emit('38', {directionFromClient: '1'});
+		    		lastkey=38;
+		    		lastvalue=1;
+		    	}
+		    	if (e.keyCode ==40)
+		    	{
+		    		if (lastkey!=40 || lastvalue !=1)
+		    			socket.emit('40', {directionFromClient: '1'});
+		    		lastkey=40;
+		    		lastvalue=1;
+		    	}
+		    	if (e.keyCode ==37)
+		    	{
+		    		if (lastkey!=37 || lastvalue !=1)
+		    			socket.emit('37', {directionFromClient: '1'});
+		    		lastkey=37;
+		    		lastvalue=1;
+		    	}
+		    	if (e.keyCode ==39)
+		    	{
+		    		if (lastkey!=39 || lastvalue !=1)
+		    			socket.emit('39', {directionFromClient: '1'});
+		    		lastkey=39;
+		    		lastvalue=1;
+		    	}
+
+			}
+		}, false);
+		// keyboard key released event
+		document.addEventListener('keyup', function(e) {
+			// check if this event's keypress is a valid command
+			if(e.keyCode in bluekeys) {
+				// force 'off' state for this key
+		  		//bluekeys[e.keyCode] = 0;
+	  			// send this command to the server
+		  		if (e.keyCode ==38)
+		  		{
+		    		socket.emit('38', {directionFromClient: '0'});
+		    		lastkey=38;
+		    		lastvalue=0;
+		    	}
+		    	if (e.keyCode ==40)
+		    	{
+		    		socket.emit('40', {directionFromClient: '0'});
+		    		lastkey=38;
+		    		lastvalue=0;
+		    	}
+		    	if (e.keyCode ==37)
+		    	{
+		    		socket.emit('37', {directionFromClient: '0'});
+		    		lastkey=38;
+		    		lastvalue=0;
+		    	}
+		    	if (e.keyCode ==39)
+		    	{
+		    		socket.emit('39', {directionFromClient: '0'});
+		    		lastkey=38;
+		    		lastvalue=0;
+		    	}
+
+			}
+		}, false);
+	}
+
+
+	// HANDLE SENDING INPUT TO SERVER
+	var socket = io.connect('http://funball-5345.onmodulus.net');
+	// socket connection event
+	socket.on('HEROO', function (data) {
+	    console.log(data.hello);
+	    myColor = data.color;
+	    frame = data.frame;
+
+	    if (myColor == 'red')
+	    	opponentColor = 'blue';
+	    else if (myColor == 'blue')
+	    	opponentColor = 'red';
+	    else
+	    	console.log("ERROR FUCK WHAT THE FUCk");
+
+	    socket.emit('IAMCONNECTING', { shalom: 'sup bro'});
+	    addEventListeners();
+ 	});
+
+
+	</script>
+	<body>
+</html>
