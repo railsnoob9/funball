@@ -453,7 +453,8 @@
 	}
 
 
-
+	var lastkey=-1;
+	var lastvalue=-1;
 	addEventListeners = function()
 	{
 
@@ -548,13 +549,33 @@
 		    	// send this command to the server
 		    	// socket.emit(port, data) sends data through the specified port to the server
 		    	if (e.keyCode ==38)
-		    		socket.emit('38', {directionFromClient: '1'});
+		    	{
+		    		if (lastkey!=38 || lastvalue !=1)
+		    			socket.emit('38', {directionFromClient: '1'});
+		    		lastkey=38;
+		    		lastvalue=1;
+		    	}
 		    	if (e.keyCode ==40)
-		    		socket.emit('40', {directionFromClient: '1'});
+		    	{
+		    		if (lastkey!=40 || lastvalue !=1)
+		    			socket.emit('40', {directionFromClient: '1'});
+		    		lastkey=40;
+		    		lastvalue=1;
+		    	}
 		    	if (e.keyCode ==37)
-		    		socket.emit('37', {directionFromClient: '1'});
+		    	{
+		    		if (lastkey!=37 || lastvalue !=1)
+		    			socket.emit('37', {directionFromClient: '1'});
+		    		lastkey=37;
+		    		lastvalue=1;
+		    	}
 		    	if (e.keyCode ==39)
-		    		socket.emit('39', {directionFromClient: '1'});
+		    	{
+		    		if (lastkey!=39 || lastvalue !=1)
+		    			socket.emit('39', {directionFromClient: '1'});
+		    		lastkey=39;
+		    		lastvalue=1;
+		    	}
 
 			}
 		}, false);
@@ -566,13 +587,29 @@
 		  		//bluekeys[e.keyCode] = 0;
 	  			// send this command to the server
 		  		if (e.keyCode ==38)
+		  		{
 		    		socket.emit('38', {directionFromClient: '0'});
+		    		lastkey=38;
+		    		lastvalue=0;
+		    	}
 		    	if (e.keyCode ==40)
+		    	{
 		    		socket.emit('40', {directionFromClient: '0'});
+		    		lastkey=38;
+		    		lastvalue=0;
+		    	}
 		    	if (e.keyCode ==37)
+		    	{
 		    		socket.emit('37', {directionFromClient: '0'});
+		    		lastkey=38;
+		    		lastvalue=0;
+		    	}
 		    	if (e.keyCode ==39)
+		    	{
 		    		socket.emit('39', {directionFromClient: '0'});
+		    		lastkey=38;
+		    		lastvalue=0;
+		    	}
 
 			}
 		}, false);
