@@ -12,25 +12,25 @@ exports.create = function(game) {
 		console.log("blue says 38 (up) is " + data.directionFromClient);
 		game.players.blue.keys[38] = data.directionFromClient;
 
-		game.players.red.socket.emit('38', { directionFromClient: game.players.blue.keys[38]});
+		game.players.red.socket.emit('38', { directionFromClient: game.players.blue.keys[38], frame: game.frame});
 	});
 	game.players.blue.socket.on('40', function (data){
 		console.log("blue says 40 (down) is " + data.directionFromClient);
 		game.players.blue.keys[40] = data.directionFromClient;
 
-		game.players.red.socket.emit('40', { directionFromClient: game.players.blue.keys[40]});
+		game.players.red.socket.emit('40', { directionFromClient: game.players.blue.keys[40], frame: game.frame});
 	});
 	game.players.blue.socket.on('37', function (data){
 		console.log("blue says 37 (left) is " + data.directionFromClient);
 		game.players.blue.keys[37] = data.directionFromClient;
 
-		game.players.red.socket.emit('37', { directionFromClient: game.players.blue.keys[37]});
+		game.players.red.socket.emit('37', { directionFromClient: game.players.blue.keys[37], frame: game.frame});
 	});
 	game.players.blue.socket.on('39', function (data){
 		console.log("blue says 39 (right) is " + data.directionFromClient);
 		game.players.blue.keys[39] = data.directionFromClient;
 
-		game.players.red.socket.emit('39', { directionFromClient: game.players.blue.keys[39]});
+		game.players.red.socket.emit('39', { directionFromClient: game.players.blue.keys[39], frame: game.frame});
 	});
 
 	//for red
@@ -38,25 +38,25 @@ exports.create = function(game) {
 		console.log("red says 38 (up) is " + data.directionFromClient);
 		game.players.red.keys[38] = data.directionFromClient;
 
-		game.players.blue.socket.emit('38', { directionFromClient: game.players.red.keys[38]});
+		game.players.blue.socket.emit('38', { directionFromClient: game.players.red.keys[38], frame: game.frame});
 	});
 	game.players.red.socket.on('40', function (data){
 		console.log("red says 40 (down) is " + data.directionFromClient);
 		game.players.red.keys[40] = data.directionFromClient;
 
-		game.players.blue.socket.emit('40', { directionFromClient: game.players.red.keys[40]});
+		game.players.blue.socket.emit('40', { directionFromClient: game.players.red.keys[40], frame: game.frame});
 	});
 	game.players.red.socket.on('37', function (data){
 		console.log("red says 37 (left) is " + data.directionFromClient);
 		game.players.red.keys[37] = data.directionFromClient;
 
-		game.players.blue.socket.emit('37', { directionFromClient: game.players.red.keys[37]});
+		game.players.blue.socket.emit('37', { directionFromClient: game.players.red.keys[37], frame: game.frame});
 	});
 	game.players.red.socket.on('39', function (data){
 		console.log("red says 39 (right) is " + data.directionFromClient);
 		game.players.red.keys[39] = data.directionFromClient;
 
-		game.players.blue.socket.emit('39', { directionFromClient: game.players.red.keys[39]});
+		game.players.blue.socket.emit('39', { directionFromClient: game.players.red.keys[39], frame: game.frame});
 	});
 
 
@@ -71,9 +71,9 @@ exports.create = function(game) {
 	console.log("blue address is; " + game.players.blue.unique_address);
 	console.log("red address is; " + game.players.red.unique_address);
 
-	game.players.blue.socket.emit('HEROO', { hello: 'WELCOME TO FUNBALL, blue player', color: 'blue'});
+	game.players.blue.socket.emit('HEROO', { hello: 'WELCOME TO FUNBALL, blue player', color: 'blue', frame: game.frame});
 											//player: game.players.blue });
-	game.players.red.socket.emit('HEROO', { hello: 'WELCOME TO FUNBALL, red player', color: 'red'});
+	game.players.red.socket.emit('HEROO', { hello: 'WELCOME TO FUNBALL, red player', color: 'red', frame: game.frame});
 											//player: game.players.red });
 
 	handleGameLoop(game);
@@ -83,7 +83,7 @@ exports.create = function(game) {
 
 function async(arg, callback)
 {
-	callback(arg);
+	setTimeout(function() { callback(arg); }, arg.frame.wait);
 }
 function handleGameLoop(game)
 {
@@ -119,8 +119,11 @@ function handleGameLoop(game)
 		async(game, function(game) {
 			var now = new Date();
 			game.frame.count = game.frame.count + 1;
-			//game.frame.delta = now - game.frame.last;
+			game.frame.delta = now.valueOf() - game.frame.last.valueOf();
+			game.frame.fps.actual = 1000 / game.frame.delta;			
+			game.frame.wait = 1000 / (game.frame.fps.target - game.frame.fps.actual);
 			game.frame.last = now;
+			console.log("ending frame, took " + game.frame.delta + "ms to process.  " + game.frame.fps.actual + " fps... waiting " + game.frame.wait + "ms");
 			return handleGameLoop(game);
 		});
 	}

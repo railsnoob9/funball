@@ -25,13 +25,17 @@ var globalAccel = .0173;
 var globalMax = 100;
 var globalMin = -100;
 
-
-
 var game = {
+  debug: 0,
   frame: {
     count: 0,
     last: new Date(),
-    delta: 0  // ms
+    delta: 0,  // ms
+    wait: 0,  // ms
+    fps: {
+      target: 30,
+      actual: 0
+    }
   },
   //not really necessary, but may be useful
   background: {
@@ -47,7 +51,7 @@ var game = {
     },
     position: {
     	x: sizeOfCanvasX/2,
-		y: sizeOfCanvasY/2
+		  y: sizeOfCanvasY/2
     }
   },
   players: { 
@@ -74,9 +78,9 @@ var game = {
     		x: 50,
     		y: 50,
     		mass: 1
-	    },
+	    }//,
       // past moves
-      moves: []
+      //moves: []
     },
     blue: {
    	  keys: { /*up*/38:0, /*down*/40:0, /*left*/37:0, /*right*/39:0 },
@@ -101,8 +105,8 @@ var game = {
     		x: 50,
     		y: 50,
     		mass: 1
-  	  },
-      moves: []
+  	  }//,
+      //moves: []
     }
   }
 };

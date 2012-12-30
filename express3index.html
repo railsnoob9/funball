@@ -25,6 +25,8 @@
 	var globalMax = 100;
 	var globalMin = -100;
 
+	var frame;	// used to hold latest simulation step data
+
 	var background = {
 		color: {
 			r: 155,
@@ -163,284 +165,299 @@
 		}
 		else
 		{
-						// set fill color allows us to on the fly determine if we want a random background or not
-			if (gamespace.gamespaceBackgroundRandom == 1)
+			if (frame.count == 0)
 			{
-				processing.fill(processing.random(255),processing.sin(processing.noise()),50);
+				// get ready...
+				frame.count = frame.count + 1;
+				frame.last = new Date();
 			}
 			else
 			{
-				processing.fill(gamespace.colorIfSolid.r,gamespace.colorIfSolid.g,gamespace.colorIfSolid.b);
-			}
-			
-			// draw an ellipse--outer (gamespace)	
-			//make it get a bit smaller each frame	
-			gamespace.size.width = gamespace.size.width-.05;
-			gamespace.size.height = gamespace.size.height-.05;		
-			processing.ellipse(gamespace.position.x,gamespace.position.y,gamespace.size.width,gamespace.size.height);
-			
-			// set stroke color
-			processing.stroke(background.color.r,background.color.g,background.color.b);
-			//processing.noStroke();
-			// set fill color
-			processing.fill(blue.color.r,blue.color.g,blue.color.b);
-			// check keyboard input
-			if (
-				bluekeys[37] == 1 ||
-				bluekeys[38] == 1 ||
-				bluekeys[39] == 1 ||
-				bluekeys[40] == 1
-				)
-			{
-				// set the fill color to background color (shadow effect)
-				processing.fill(background.color.r,background.color.g,background.color.b);
-				// draw an ellipse (blue starting point)
-				processing.ellipse(blue.position.x,blue.position.y,blue.size.x,blue.size.y);	
+				// GO!
+				var now = new Date();
+				frame.count = frame.count + 1;
+				frame.last = now;
+
+					// set fill color allows us to on the fly determine if we want a random background or not
+				if (gamespace.gamespaceBackgroundRandom == 1)
+				{
+					processing.fill(processing.random(255),processing.sin(processing.noise()),50);
+				}
+				else
+				{
+					processing.fill(gamespace.colorIfSolid.r,gamespace.colorIfSolid.g,gamespace.colorIfSolid.b);
+				}
 				
-				// update speed of blue
-				if (bluekeys[37]==1)
-				{
-					blue.speed.current.x = blue.speed.current.x - blue.speed.acceleration;
-				}
-				if (bluekeys[38]==1)
-				{
-					//ellipsey = ellipsey - speedacceleration;
-					blue.speed.current.y = blue.speed.current.y - blue.speed.acceleration;				
-				}
-				if (bluekeys[39]==1)
-				{
-					//ellipsex = ellipsex + speedacceleration;
-					blue.speed.current.x = blue.speed.current.x + blue.speed.acceleration;
-				}
-				if (bluekeys[40]==1)
-				{
-					//ellipsey = ellipsey + speedacceleration;
-					blue.speed.current.y = blue.speed.current.y + blue.speed.acceleration;					
-				}
-
-			}
-
-			//red
-			if (
-				redkeys[37] == 1 ||
-				redkeys[38] == 1 ||
-				redkeys[39] == 1 ||
-				redkeys[40] == 1
-				)
-			{
-				// set the fill color to background color (shadow effect)
-				//processing.fill(background.color.r,background.color.g,background.color.b);
-				// draw an ellipse (blue starting point)
-				//processing.ellipse(red.position.x,red.position.y,red.size.x,red.size.y);	
+				// draw an ellipse--outer (gamespace)	
+				//make it get a bit smaller each frame	
+				gamespace.size.width = gamespace.size.width-.05;
+				gamespace.size.height = gamespace.size.height-.05;		
+				processing.ellipse(gamespace.position.x,gamespace.position.y,gamespace.size.width,gamespace.size.height);
 				
-				// update speed of red
-				if (redkeys[37]==1)
+				// set stroke color
+				processing.stroke(background.color.r,background.color.g,background.color.b);
+				//processing.noStroke();
+				// set fill color
+				processing.fill(blue.color.r,blue.color.g,blue.color.b);
+				// check keyboard input
+				if (
+					bluekeys[37] == 1 ||
+					bluekeys[38] == 1 ||
+					bluekeys[39] == 1 ||
+					bluekeys[40] == 1
+					)
 				{
-					red.speed.current.x = red.speed.current.x - red.speed.acceleration;
-				}
-				if (redkeys[38]==1)
-				{
-					//ellipsey = ellipsey - speedacceleration;
-					red.speed.current.y = red.speed.current.y - red.speed.acceleration;				
-				}
-				if (redkeys[39]==1)
-				{
-					//ellipsex = ellipsex + speedacceleration;
-					red.speed.current.x = red.speed.current.x + red.speed.acceleration;
-				}
-				if (redkeys[40]==1)
-				{
-					//ellipsey = ellipsey + speedacceleration;
-					red.speed.current.y = red.speed.current.y + red.speed.acceleration;					
+					// set the fill color to background color (shadow effect)
+					processing.fill(background.color.r,background.color.g,background.color.b);
+					// draw an ellipse (blue starting point)
+					processing.ellipse(blue.position.x,blue.position.y,blue.size.x,blue.size.y);	
+					
+					// update speed of blue
+					if (bluekeys[37]==1)
+					{
+						blue.speed.current.x = blue.speed.current.x - blue.speed.acceleration;
+					}
+					if (bluekeys[38]==1)
+					{
+						//ellipsey = ellipsey - speedacceleration;
+						blue.speed.current.y = blue.speed.current.y - blue.speed.acceleration;				
+					}
+					if (bluekeys[39]==1)
+					{
+						//ellipsex = ellipsex + speedacceleration;
+						blue.speed.current.x = blue.speed.current.x + blue.speed.acceleration;
+					}
+					if (bluekeys[40]==1)
+					{
+						//ellipsey = ellipsey + speedacceleration;
+						blue.speed.current.y = blue.speed.current.y + blue.speed.acceleration;					
+					}
+
 				}
 
-			}
-			// apply entropy/friction
-			if (blue.speed.current.x > 0) {
-				blue.speed.current.x = blue.speed.current.x - blue.speed.entropy;
-			} else if (blue.speed.current.x < 0) {
-				blue.speed.current.x = blue.speed.current.x + blue.speed.entropy;
-			}
-			if (blue.speed.current.y > 0) {
-				blue.speed.current.y = blue.speed.current.y - blue.speed.entropy;
-			} else if (blue.speed.current.y < 0) {
-				blue.speed.current.y = blue.speed.current.y + blue.speed.entropy;
-			}
+				//red
+				if (
+					redkeys[37] == 1 ||
+					redkeys[38] == 1 ||
+					redkeys[39] == 1 ||
+					redkeys[40] == 1
+					)
+				{
+					// set the fill color to background color (shadow effect)
+					//processing.fill(background.color.r,background.color.g,background.color.b);
+					// draw an ellipse (blue starting point)
+					//processing.ellipse(red.position.x,red.position.y,red.size.x,red.size.y);	
+					
+					// update speed of red
+					if (redkeys[37]==1)
+					{
+						red.speed.current.x = red.speed.current.x - red.speed.acceleration;
+					}
+					if (redkeys[38]==1)
+					{
+						//ellipsey = ellipsey - speedacceleration;
+						red.speed.current.y = red.speed.current.y - red.speed.acceleration;				
+					}
+					if (redkeys[39]==1)
+					{
+						//ellipsex = ellipsex + speedacceleration;
+						red.speed.current.x = red.speed.current.x + red.speed.acceleration;
+					}
+					if (redkeys[40]==1)
+					{
+						//ellipsey = ellipsey + speedacceleration;
+						red.speed.current.y = red.speed.current.y + red.speed.acceleration;					
+					}
+
+				}
+				// apply entropy/friction
+				if (blue.speed.current.x > 0) {
+					blue.speed.current.x = blue.speed.current.x - blue.speed.entropy;
+				} else if (blue.speed.current.x < 0) {
+					blue.speed.current.x = blue.speed.current.x + blue.speed.entropy;
+				}
+				if (blue.speed.current.y > 0) {
+					blue.speed.current.y = blue.speed.current.y - blue.speed.entropy;
+				} else if (blue.speed.current.y < 0) {
+					blue.speed.current.y = blue.speed.current.y + blue.speed.entropy;
+				}
+				
+				// constrain speed
+				if (blue.speed.current.y > blue.speed.max) { blue.speed.current.y = blue.speed.max; }
+				if (blue.speed.current.x > blue.speed.max) { blue.speed.current.x = blue.speed.max; }
+				if (blue.speed.current.y < blue.speed.min) { blue.speed.current.y = blue.speed.min; }
+				if (blue.speed.current.x < blue.speed.min) { blue.speed.current.x = blue.speed.min; }	
+
+				//red
+				if (red.speed.current.y > red.speed.max) { red.speed.current.y = red.speed.max; }
+				if (red.speed.current.x > red.speed.max) { red.speed.current.x = red.speed.max; }
+				if (red.speed.current.y < red.speed.min) { red.speed.current.y = red.speed.min; }
+				if (red.speed.current.x < red.speed.min) { red.speed.current.x = red.speed.min; }	
+				// contrain position
+				if (blue.position.x < 0) { blue.speed.current.x = -blue.speed.current.x; }
+				if (blue.position.y < 0) { blue.speed.current.y = -blue.speed.current.y; }
+				if (blue.position.x > background.size.x) { blue.speed.current.x = -blue.speed.current.x; }
+				if (blue.position.y > background.size.y) { blue.speed.current.y = -blue.speed.current.y; }
+				//red
+				if (red.position.x < 0) { red.speed.current.x = -red.speed.current.x; }
+				if (red.position.y < 0) { red.speed.current.y = -red.speed.current.y; }
+				if (red.position.x > background.size.x) { red.speed.current.x = -red.speed.current.x; }
+				if (red.position.y > background.size.y) { red.speed.current.y = -red.speed.current.y; }
+
+				handleCollision();
+
+				function handleCollision()
+				{
+					//check if players collided
+					iscollision = playerEdgeDetect();
+
+					if (iscollision ==1)
+					{
+						//2d elastic collision
+						var distancex = blue.position.x - red.position.x;
+						var distancey = blue.position.y - red.position.y;
+
+						var collisionision_angle = processing.atan2(distancey, distancex);
+
+
+						var magnitude_1 = processing.sqrt(blue.speed.current.x*blue.speed.current.x+blue.speed.current.y*blue.speed.current.y);
+						var magnitude_2 = processing.sqrt(red.speed.current.x*red.speed.current.x+red.speed.current.y*red.speed.current.y);
+						var direction_1 = processing.atan2(blue.speed.current.y, blue.speed.current.x);
+						var direction_2 = processing.atan2(red.speed.current.y, red.speed.current.x);
+
+						var new_xspeed_1 = magnitude_1*processing.cos(direction_1-collisionision_angle);
+						var new_yspeed_1 = magnitude_1*processing.sin(direction_1-collisionision_angle);
+						var new_xspeed_2 = magnitude_2*processing.cos(direction_2-collisionision_angle);
+						var new_yspeed_2 = magnitude_2*processing.sin(direction_2-collisionision_angle);
+
+
+						var final_xspeed_1 = ((blue.size.mass-red.size.mass)*new_xspeed_1+(red.size.mass+red.size.mass)*new_xspeed_2)/
+							(blue.size.mass+red.size.mass);
+						var final_xspeed_2 = ((blue.size.mass+blue.size.mass)*new_xspeed_1+(blue.size.mass-red.size.mass)*new_xspeed_2)/
+							(blue.size.mass+red.size.mass);
+						var final_yspeed_1 = new_yspeed_1;
+						var final_yspeed_2 = new_yspeed_2;
+
+						blue.speed.current.x = processing.cos(collisionision_angle)*final_xspeed_1+processing.cos(collisionision_angle+processing.PI/2)*final_yspeed_1;
+						blue.speed.current.y = processing.sin(collisionision_angle)*final_xspeed_1+processing.sin(collisionision_angle+processing.PI/2)*final_yspeed_1;
+						red.speed.current.x = processing.cos(collisionision_angle)*final_xspeed_2+processing.cos(collisionision_angle+processing.PI/2)*final_yspeed_2;
+						red.speed.current.y = processing.sin(collisionision_angle)*final_xspeed_2+processing.sin(collisionision_angle+processing.PI/2)*final_yspeed_2;
+					}
+				}
+
+
+				// update position of blue
+				blue.position.x = blue.position.x + blue.speed.current.x;	
+				blue.position.y = blue.position.y + blue.speed.current.y;	
+
+				red.position.x = red.position.x + red.speed.current.x;	
+				red.position.y = red.position.y + red.speed.current.y;				
 			
-			// constrain speed
-			if (blue.speed.current.y > blue.speed.max) { blue.speed.current.y = blue.speed.max; }
-			if (blue.speed.current.x > blue.speed.max) { blue.speed.current.x = blue.speed.max; }
-			if (blue.speed.current.y < blue.speed.min) { blue.speed.current.y = blue.speed.min; }
-			if (blue.speed.current.x < blue.speed.min) { blue.speed.current.x = blue.speed.min; }	
-
-			//red
-			if (red.speed.current.y > red.speed.max) { red.speed.current.y = red.speed.max; }
-			if (red.speed.current.x > red.speed.max) { red.speed.current.x = red.speed.max; }
-			if (red.speed.current.y < red.speed.min) { red.speed.current.y = red.speed.min; }
-			if (red.speed.current.x < red.speed.min) { red.speed.current.x = red.speed.min; }	
-			// contrain position
-			if (blue.position.x < 0) { blue.speed.current.x = -blue.speed.current.x; }
-			if (blue.position.y < 0) { blue.speed.current.y = -blue.speed.current.y; }
-			if (blue.position.x > background.size.x) { blue.speed.current.x = -blue.speed.current.x; }
-			if (blue.position.y > background.size.y) { blue.speed.current.y = -blue.speed.current.y; }
-			//red
-			if (red.position.x < 0) { red.speed.current.x = -red.speed.current.x; }
-			if (red.position.y < 0) { red.speed.current.y = -red.speed.current.y; }
-			if (red.position.x > background.size.x) { red.speed.current.x = -red.speed.current.x; }
-			if (red.position.y > background.size.y) { red.speed.current.y = -red.speed.current.y; }
-
-			handleCollision();
-
-			function handleCollision()
-			{
-				//check if players collided
-				iscollision = playerEdgeDetect();
-
-				if (iscollision ==1)
+				// define local scope function
+				function outerCircleEdgeDetect(x, y)
 				{
-					//2d elastic collision
+					var distancex = x - gamespace.position.x;
+					var distancey = y - gamespace.position.y;
+					
+					var totaldistance = processing.sqrt(distancex*distancex + distancey*distancey);
+					
+					//we know it's a circle, so can just use radius
+					var radius = gamespace.size.width/2;
+					
+					if (totaldistance > radius)
+						return 1;
+					else
+						return 0;
+				};	
+
+				// define local scope function
+				//way too simple right now
+				function playerEdgeDetect()
+				{
 					var distancex = blue.position.x - red.position.x;
 					var distancey = blue.position.y - red.position.y;
+					
+					var totaldistance = processing.sqrt(distancex*distancex + distancey*distancey);
+					
+					//we know it's a circle, so can just use radius
+					//this also assumes that the two blues are the same size 
+					var radius = blue.size.x;
+					
+					if (totaldistance <= radius)
+						return 1;
+					else
+						return 0;
+				};	
 
-					var collisionision_angle = processing.atan2(distancey, distancex);
 
+				//tail stuff
 
-					var magnitude_1 = processing.sqrt(blue.speed.current.x*blue.speed.current.x+blue.speed.current.y*blue.speed.current.y);
-					var magnitude_2 = processing.sqrt(red.speed.current.x*red.speed.current.x+red.speed.current.y*red.speed.current.y);
-					var direction_1 = processing.atan2(blue.speed.current.y, blue.speed.current.x);
-					var direction_2 = processing.atan2(red.speed.current.y, red.speed.current.x);
+			    // Reads throught the entire array
+			    // and shifts the values to the left
+			    for(var i=1; i<blue.size.x; i++) {
+					blue.tail.tailmx[i-1] = blue.tail.tailmx[i];
+			 		blue.tail.tailmy[i-1] = blue.tail.tailmy[i];
+			    } 
+			    for(var i=1; i<red.size.x; i++) {
+					red.tail.tailmx[i-1] = red.tail.tailmx[i];
+			 		red.tail.tailmy[i-1] = red.tail.tailmy[i];
+			    } 
 
-					var new_xspeed_1 = magnitude_1*processing.cos(direction_1-collisionision_angle);
-					var new_yspeed_1 = magnitude_1*processing.sin(direction_1-collisionision_angle);
-					var new_xspeed_2 = magnitude_2*processing.cos(direction_2-collisionision_angle);
-					var new_yspeed_2 = magnitude_2*processing.sin(direction_2-collisionision_angle);
+			    blue.tail.tailmx[blue.size.x-1] = blue.position.x;
+		  		blue.tail.tailmy[blue.size.x-1] = blue.position.y;
+		  		red.tail.tailmx[red.size.x-1] = red.position.x;
+		  		red.tail.tailmy[red.size.x-1] = red.position.y;
 
+								
+				// set the fill color (blue color)
+				processing.fill(blue.color.r,blue.color.g,blue.color.b);
+				// draw the blue ellipse
 
-					var final_xspeed_1 = ((blue.size.mass-red.size.mass)*new_xspeed_1+(red.size.mass+red.size.mass)*new_xspeed_2)/
-						(blue.size.mass+red.size.mass);
-					var final_xspeed_2 = ((blue.size.mass+blue.size.mass)*new_xspeed_1+(blue.size.mass-red.size.mass)*new_xspeed_2)/
-						(blue.size.mass+red.size.mass);
-					var final_yspeed_1 = new_yspeed_1;
-					var final_yspeed_2 = new_yspeed_2;
+			//	var blueColor= processing.color(blue.color.r,blue.color.g,blue.color.b);
 
-					blue.speed.current.x = processing.cos(collisionision_angle)*final_xspeed_1+processing.cos(collisionision_angle+processing.PI/2)*final_yspeed_1;
-					blue.speed.current.y = processing.sin(collisionision_angle)*final_xspeed_1+processing.sin(collisionision_angle+processing.PI/2)*final_yspeed_1;
-					red.speed.current.x = processing.cos(collisionision_angle)*final_xspeed_2+processing.cos(collisionision_angle+processing.PI/2)*final_yspeed_2;
-					red.speed.current.y = processing.sin(collisionision_angle)*final_xspeed_2+processing.sin(collisionision_angle+processing.PI/2)*final_yspeed_2;
+			//	processing.fill(blueColor,15);
+				//draw tails
+				for(var i=0; i<blue.size.x; i++) {
+		    		processing.ellipse(blue.tail.tailmx[i], blue.tail.tailmy[i], i, i);
+		  		}
+				
+				// set the fill color (red color)
+				processing.fill(red.color.r,red.color.g,red.color.b);
+				// draw the blue ellipse
+				processing.ellipse(red.position.x,red.position.y,red.size.x,red.size.y);
+
+				for(var i=0; i<red.size.x; i++) {
+		    		processing.ellipse(red.tail.tailmx[i], red.tail.tailmy[i], i, i);
+		  		}
+		  
+				isoutside = outerCircleEdgeDetect(blue.position.x, blue.position.y);
+				isoutside2 = outerCircleEdgeDetect(red.position.x, red.position.y);
+
+				//end of game texts
+		  		if (isoutside ==1 && isoutside2 ==0)
+				{
+					processing.textSize(40);
+					processing.fill(255,255,255);
+					processing.text("Red Wins", sizeOfCanvasX/2-100, 200,550,550);
+					isGameOver = 1;
+				}
+				if (isoutside ==0 && isoutside2 ==1)
+				{
+					processing.textSize(40);
+					processing.fill(255,255,255);
+					processing.text("Blue Wins", sizeOfCanvasX/2-100, 200,550,550);
+					isGameOver = 1;
+				}
+				if (isoutside ==1 && isoutside2 ==1)
+				{
+					processing.textSize(40);
+					processing.fill(255,255,255);
+					processing.text("Draw", sizeOfCanvasX/2-100, 200,550,550);
+					isGameOver = 1;
 				}
 			}
-
-
-			// update position of blue
-			blue.position.x = blue.position.x + blue.speed.current.x;	
-			blue.position.y = blue.position.y + blue.speed.current.y;	
-
-			red.position.x = red.position.x + red.speed.current.x;	
-			red.position.y = red.position.y + red.speed.current.y;				
-		
-			// define local scope function
-			function outerCircleEdgeDetect(x, y)
-			{
-				var distancex = x - gamespace.position.x;
-				var distancey = y - gamespace.position.y;
-				
-				var totaldistance = processing.sqrt(distancex*distancex + distancey*distancey);
-				
-				//we know it's a circle, so can just use radius
-				var radius = gamespace.size.width/2;
-				
-				if (totaldistance > radius)
-					return 1;
-				else
-					return 0;
-			};	
-
-			// define local scope function
-			//way too simple right now
-			function playerEdgeDetect()
-			{
-				var distancex = blue.position.x - red.position.x;
-				var distancey = blue.position.y - red.position.y;
-				
-				var totaldistance = processing.sqrt(distancex*distancex + distancey*distancey);
-				
-				//we know it's a circle, so can just use radius
-				//this also assumes that the two blues are the same size 
-				var radius = blue.size.x;
-				
-				if (totaldistance <= radius)
-					return 1;
-				else
-					return 0;
-			};	
-
-
-			//tail stuff
-
-		    // Reads throught the entire array
-		    // and shifts the values to the left
-		    for(var i=1; i<blue.size.x; i++) {
-				blue.tail.tailmx[i-1] = blue.tail.tailmx[i];
-		 		blue.tail.tailmy[i-1] = blue.tail.tailmy[i];
-		    } 
-		    for(var i=1; i<red.size.x; i++) {
-				red.tail.tailmx[i-1] = red.tail.tailmx[i];
-		 		red.tail.tailmy[i-1] = red.tail.tailmy[i];
-		    } 
-
-		    blue.tail.tailmx[blue.size.x-1] = blue.position.x;
-	  		blue.tail.tailmy[blue.size.x-1] = blue.position.y;
-	  		red.tail.tailmx[red.size.x-1] = red.position.x;
-	  		red.tail.tailmy[red.size.x-1] = red.position.y;
-
-							
-			// set the fill color (blue color)
-			processing.fill(blue.color.r,blue.color.g,blue.color.b);
-			// draw the blue ellipse
-
-		//	var blueColor= processing.color(blue.color.r,blue.color.g,blue.color.b);
-
-		//	processing.fill(blueColor,15);
-			//draw tails
-			for(var i=0; i<blue.size.x; i++) {
-	    		processing.ellipse(blue.tail.tailmx[i], blue.tail.tailmy[i], i, i);
-	  		}
-			
-			// set the fill color (red color)
-			processing.fill(red.color.r,red.color.g,red.color.b);
-			// draw the blue ellipse
-			processing.ellipse(red.position.x,red.position.y,red.size.x,red.size.y);
-
-			for(var i=0; i<red.size.x; i++) {
-	    		processing.ellipse(red.tail.tailmx[i], red.tail.tailmy[i], i, i);
-	  		}
-	  
-			isoutside = outerCircleEdgeDetect(blue.position.x, blue.position.y);
-			isoutside2 = outerCircleEdgeDetect(red.position.x, red.position.y);
-
-			//end of game texts
-	  		if (isoutside ==1 && isoutside2 ==0)
-			{
-				processing.textSize(40);
-				processing.fill(255,255,255);
-				processing.text("Red Wins", sizeOfCanvasX/2-100, 200,550,550);
-				isGameOver = 1;
-			}
-			if (isoutside ==0 && isoutside2 ==1)
-			{
-				processing.textSize(40);
-				processing.fill(255,255,255);
-				processing.text("Blue Wins", sizeOfCanvasX/2-100, 200,550,550);
-				isGameOver = 1;
-			}
-			if (isoutside ==1 && isoutside2 ==1)
-			{
-				processing.textSize(40);
-				processing.fill(255,255,255);
-				processing.text("Draw", sizeOfCanvasX/2-100, 200,550,550);
-				isGameOver = 1;
-			}
 		}
+						
 		};  
 	};
 		  
@@ -451,6 +468,10 @@
 	function draw() {
 	    window.requestAnimationFrame(draw);
 	}
+
+	reconcile = function(data) {
+		
+	};
 
 
 	var lastkey=-1;
@@ -622,6 +643,7 @@
 	socket.on('HEROO', function (data) {
 	    console.log(data.hello);
 	    myColor = data.color;
+	    frame = data.frame;
 
 	    if (myColor == 'red')
 	    	opponentColor = 'blue';
