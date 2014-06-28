@@ -12,25 +12,25 @@ exports.create = function(game) {
 		console.log("blue says 38 (up) is " + data.directionFromClient);
 		game.players.blue.keys[38] = data.directionFromClient;
 
-		game.players.red.socket.emit('38', { directionFromClient: game.players.blue.keys[38], frame: game.frame});
+		game.players.red.socket.volatile.emit('38', { directionFromClient: game.players.blue.keys[38], frame: game.frame});
 	});
 	game.players.blue.socket.on('40', function (data){
 		console.log("blue says 40 (down) is " + data.directionFromClient);
 		game.players.blue.keys[40] = data.directionFromClient;
 
-		game.players.red.socket.emit('40', { directionFromClient: game.players.blue.keys[40], frame: game.frame});
+		game.players.red.socket.volatile.emit('40', { directionFromClient: game.players.blue.keys[40], frame: game.frame});
 	});
 	game.players.blue.socket.on('37', function (data){
 		console.log("blue says 37 (left) is " + data.directionFromClient);
 		game.players.blue.keys[37] = data.directionFromClient;
 
-		game.players.red.socket.emit('37', { directionFromClient: game.players.blue.keys[37], frame: game.frame});
+		game.players.red.socket.volatile.emit('37', { directionFromClient: game.players.blue.keys[37], frame: game.frame});
 	});
 	game.players.blue.socket.on('39', function (data){
 		console.log("blue says 39 (right) is " + data.directionFromClient);
 		game.players.blue.keys[39] = data.directionFromClient;
 
-		game.players.red.socket.emit('39', { directionFromClient: game.players.blue.keys[39], frame: game.frame});
+		game.players.red.socket.volatile.emit('39', { directionFromClient: game.players.blue.keys[39], frame: game.frame});
 	});
 
 	//for red
@@ -38,25 +38,25 @@ exports.create = function(game) {
 		console.log("red says 38 (up) is " + data.directionFromClient);
 		game.players.red.keys[38] = data.directionFromClient;
 
-		game.players.blue.socket.emit('38', { directionFromClient: game.players.red.keys[38], frame: game.frame});
+		game.players.blue.socket.volatile.emit('38', { directionFromClient: game.players.red.keys[38], frame: game.frame});
 	});
 	game.players.red.socket.on('40', function (data){
 		console.log("red says 40 (down) is " + data.directionFromClient);
 		game.players.red.keys[40] = data.directionFromClient;
 
-		game.players.blue.socket.emit('40', { directionFromClient: game.players.red.keys[40], frame: game.frame});
+		game.players.blue.socket.volatile.emit('40', { directionFromClient: game.players.red.keys[40], frame: game.frame});
 	});
 	game.players.red.socket.on('37', function (data){
 		console.log("red says 37 (left) is " + data.directionFromClient);
 		game.players.red.keys[37] = data.directionFromClient;
 
-		game.players.blue.socket.emit('37', { directionFromClient: game.players.red.keys[37], frame: game.frame});
+		game.players.blue.socket.volatile.emit('37', { directionFromClient: game.players.red.keys[37], frame: game.frame});
 	});
 	game.players.red.socket.on('39', function (data){
 		console.log("red says 39 (right) is " + data.directionFromClient);
 		game.players.red.keys[39] = data.directionFromClient;
 
-		game.players.blue.socket.emit('39', { directionFromClient: game.players.red.keys[39], frame: game.frame});
+		game.players.blue.socket.volatile.emit('39', { directionFromClient: game.players.red.keys[39], frame: game.frame});
 	});
 
 
@@ -123,6 +123,10 @@ function handleGameLoop(game)
 			game.frame.fps.actual = 1000 / game.frame.delta;			
 			game.frame.wait = 1000 / (game.frame.fps.target - game.frame.fps.actual);
 			game.frame.last = now;
+
+
+			// sendPositionsToClients(game);
+
 			console.log("ending frame, took " + game.frame.delta + "ms to process.  " + game.frame.fps.actual + " fps... waiting " + game.frame.wait + "ms");
 			return handleGameLoop(game);
 		});
@@ -138,15 +142,44 @@ function sendPositionsToClients(game)
 			redxposition: game.players.red.position.x,
 			redyposition: game.players.red.position.y,
 			bluexposition: game.players.blue.position.x,
-			blueyposition: game.players.blue.position.y
+			blueyposition: game.players.blue.position.y,
+			frame: game.frame
 		});
 		game.players.blue.socket.volatile.emit('positions', { 
 			redxposition: game.players.red.position.x,
 			redyposition: game.players.red.position.y,
 			bluexposition: game.players.blue.position.x,
-			blueyposition: game.players.blue.position.y
+			blueyposition: game.players.blue.position.y,
+			frame: game.frame
 		});
 }
+
+// function sendPositionsToClients(game)
+// {
+// 		// console.log("hi");
+// 		game.players.red.socket.volatile.emit('positions', { 
+// 			redxposition: game.players.red.position.x,
+// 			redyposition: game.players.red.position.y,
+// 			redxspeed: game.players.red.speed.current.x,
+// 			redyspeed: game.players.red.speed.current.y,
+
+// 			bluexposition: game.players.blue.position.x,
+// 			blueyposition: game.players.blue.position.y,
+// 			bluexspeed: game.players.blue.speed.current.x,		
+// 			blueyspeed: game.players.blue.speed.current.y
+// 		});
+// 		game.players.blue.socket.volatile.emit('positions', { 
+// 			redxposition: game.players.red.position.x,
+// 			redyposition: game.players.red.position.y,
+// 			redxspeed: game.players.red.speed.current.x,
+// 			redyspeed: game.players.red.speed.current.y,
+
+// 			bluexposition: game.players.blue.position.x,
+// 			blueyposition: game.players.blue.position.y,
+// 			bluexspeed: game.players.blue.speed.current.x,		
+// 			blueyspeed: game.players.blue.speed.current.y
+// 		});
+// }
 
 function constrainSpeedAndPosition(game)
 {
