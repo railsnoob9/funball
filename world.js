@@ -104,6 +104,9 @@ function handleGameLoop(game)
 	// NETWORK
 	if (game.frame.count % 10 == 0)
 	{
+		//debug
+		console.log("Server: game.players.red.position.x = " + game.players.red.position.x);
+		console.log("Server: game.players.red.position.y = " + game.players.red.position.y);
 		sendPositionsToClients(game);
 	}
 

@@ -18,7 +18,7 @@
 	var sketch = new Processing.Sketch();
 	var sizeOfCanvasX = 800;
 	var sizeOfCanvasY = 600;
-	var frameRate = 240;
+	var frameRate = 30;
 
 	var globalAccel = .0173;
 	//var globalAccel = 10;
@@ -167,12 +167,15 @@
 		else
 		{
 			frame.count = frame.count + 1;
-			if (frame.count == 0)
+			if (frame.count == 1)
 			{
 				// get ready...
 
-				frame.last = new Date();
-				processing.frameRate(frame.fps.target);				
+				// frame.last = new Date();
+				// var newFrameRate = frame.fps.target;
+				// processing.frameRate(newFrameRate);
+				//debug
+				// console.log(newFrameRate);
 			}
 			else
 			{
