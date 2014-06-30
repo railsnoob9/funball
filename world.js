@@ -87,7 +87,9 @@ function async(arg, callback)
 }
 function handleGameLoop(game)
 {
-	console.log("starting frame " + game.frame.count);
+	//debug
+	//console.log("starting frame " + game.frame.count);
+
 	// GAME LOGIC
 	//update game space (i.e. make it smaller)
 	game.space.size.width = game.space.size.width -.05;
@@ -131,7 +133,8 @@ function handleGameLoop(game)
 
 			// sendPositionsToClients(game);
 
-			console.log("ending frame, took " + game.frame.delta + "ms to process.  " + game.frame.fps.actual + " fps... waiting " + game.frame.wait + "ms");
+			//debug
+			//console.log("ending frame, took " + game.frame.delta + "ms to process.  " + game.frame.fps.actual + " fps... waiting " + game.frame.wait + "ms");
 			return handleGameLoop(game);
 		});
 	}
