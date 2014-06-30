@@ -166,10 +166,11 @@
 		}
 		else
 		{
+			frame.count = frame.count + 1;
 			if (frame.count == 0)
 			{
 				// get ready...
-				frame.count = frame.count + 1;
+
 				frame.last = new Date();
 				processing.frameRate(frame.fps.target);				
 			}
@@ -177,7 +178,6 @@
 			{
 				// GO!
 				var now = new Date();
-				frame.count = frame.count + 1;
 				frame.last = now;
 
 					// set fill color allows us to on the fly determine if we want a random background or not
@@ -488,15 +488,15 @@
 		if (myColor =='blue')
 		{
 
-			// socket.on('positions', function (data){
-			// 	if (data.frame.count != frame.count) { reconcile(data); }
+			socket.on('positions', function (data){
+				if (data.frame.count != frame.count) { reconcile(data); }
 
-			// 	red.position.x = data.redxposition;
-			// 	red.position.y = data.redyposition;
-			// 	// red.speed.current.x = data.redxspeed;
-			// 	// red.speed.current.y = data.redyspeed;
+				red.position.x = data.redxposition;
+				red.position.y = data.redyposition;
+				// red.speed.current.x = data.redxspeed;
+				// red.speed.current.y = data.redyspeed;
 
-			// });
+			});
 
 			socket.on('38', function (data){
 				console.log(opponentColor + " says 38 (up) is " + data.directionFromClient + " frame " + data.frame.count + " vs " + frame.count);
@@ -522,15 +522,15 @@
 		else if (myColor =='red')
 		{
 
-			// socket.on('positions', function (data){
-			// 	if (data.frame.count != frame.count) { reconcile(data); }
+			socket.on('positions', function (data){
+				if (data.frame.count != frame.count) { reconcile(data); }
 
-			// 	blue.position.x = data.bluexposition;
-			// 	blue.position.y = data.blueyposition;
-			// 	// blue.speed.current.x = data.bluexspeed;
-			// 	// blue.speed.current.y = data.blueyspeed;
+				blue.position.x = data.bluexposition;
+				blue.position.y = data.blueyposition;
+				// blue.speed.current.x = data.bluexspeed;
+				// blue.speed.current.y = data.blueyspeed;
 
-			// });
+			});
 
 			socket.on('38', function (data){
 				console.log(opponentColor + " says 38 (up) is " + data.directionFromClient + " frame " + data.frame.count + " vs " + frame.count);

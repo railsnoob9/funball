@@ -100,7 +100,11 @@ function handleGameLoop(game)
 	updatePlayerPositions(game);
 
 	// NETWORK
-	sendPositionsToClients(game);
+	if (game.frame.count % 10 == 0)
+	{
+		sendPositionsToClients(game);
+	}
+
 
 	// GAME LOGIC
 	//check if game is over
